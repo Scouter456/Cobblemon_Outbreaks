@@ -13,7 +13,7 @@
     "sources": "https://github.com/Scouter456/Cobblemon_Outbreaks/issues"
   },
 
-  "license": "CC0-1.0",
+  "license": "MIT",
   "icon": "assets/cobblemonoutbreaks/cobblemonoutbreaks_logo.png",
 
   "environment": "*",
