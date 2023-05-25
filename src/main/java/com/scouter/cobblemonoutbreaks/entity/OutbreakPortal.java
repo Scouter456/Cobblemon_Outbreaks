@@ -1,5 +1,6 @@
 package com.scouter.cobblemonoutbreaks.entity;
 
+import com.cobblemon.mod.common.api.entity.Despawner;
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
@@ -8,6 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.scouter.cobblemonoutbreaks.config.CobblemonOutbreaksConfig;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -39,8 +41,8 @@ public class OutbreakPortal {
                     Codec.doubleRange(15D,40D).optionalFieldOf("leash_range", 32D).forGetter(g -> g.leashRange),
                     SpawnAlgorithms.CODEC.optionalFieldOf("spawn_algorithm", SpawnAlgorithms.NAMED_ALGORITHMS.get(prefix("clustered"))).forGetter(g -> g.spawnAlgo),
                     Codec.INT.optionalFieldOf("gate_timer", 36000).forGetter(t -> t.gateTimer),
-                    Codec.intRange(2, 100).optionalFieldOf("max_pokemon_level", 100).forGetter(s -> s.maxPokemonLevel)
-
+                    Codec.intRange(2, 100).optionalFieldOf("max_pokemon_level", 100).forGetter(s -> s.maxPokemonLevel),
+                    ResourceLocation.CODEC.listOf().optionalFieldOf("biome", Collections.singletonList(new ResourceLocation("plains"))).forGetter(b -> b.spawnBiome)
                     )
             .apply(inst, OutbreakPortal::new)
     );
@@ -60,6 +62,8 @@ public class OutbreakPortal {
     protected double shinyChance;
 
     protected final SpawnAlgorithms.SpawnAlgorithm spawnAlgo;
+    protected final List<ResourceLocation> spawnBiome;
+
 
     /**
      * Creates an OutbreakPortal instance.
@@ -68,8 +72,6 @@ public class OutbreakPortal {
      * @param waves          The total number of waves in the gateway.
      * @param spawnsPerWave  The number of entities to be spawned in each wave.
      * @param rewards        The list of rewards that will be granted at the end of this wave.
-     * @param minSpawnRadius The minimum spawn radius for the entities.
-     * @param maxSpawnRadius The maximum spawn radius for the entities.
      * @param shinyChance    The chance of a spawned entity being shiny.
      * @param experience     The experience value associated with the wave.
      * @param spawnRange     The range within which the entities will be spawned.
@@ -77,11 +79,12 @@ public class OutbreakPortal {
      * @param spawnAlgo      The algorithm used to determine the spawn position for the entities.
      * @param gateTimer      The time limit for completing this wave.
      * @param maxPokemonLevel The maximum level of the spawned entities.
+     * @param spawnBiome     The biomes the entity can spawn in.
      */
     public OutbreakPortal(String species, int waves, int spawnsPerWave, List<Item> rewards,
                           int minSpawnRadius, int maxSpawnRadius, double shinyChance,
                           int experience, double spawnRange, double leashRange,
-                          SpawnAlgorithms.SpawnAlgorithm spawnAlgo, int gateTimer, int maxPokemonLevel) {
+                          SpawnAlgorithms.SpawnAlgorithm spawnAlgo, int gateTimer, int maxPokemonLevel, List<ResourceLocation> spawnBiome) {
         this.species = species;
         this.rewards = rewards;
         this.experience = experience;
@@ -95,6 +98,7 @@ public class OutbreakPortal {
         this.shinyChance = shinyChance;
         this.gateTimer = gateTimer;
         this.maxPokemonLevel = maxPokemonLevel;
+        this.spawnBiome = spawnBiome;
     }
 
     public List<Item> getRewards() {
@@ -148,6 +152,10 @@ public class OutbreakPortal {
     public int getMaxPokemonLevel() {
         return this.maxPokemonLevel;
     }
+
+    public List<ResourceLocation> getSpawnBiome() {
+        return this.spawnBiome;
+    }
     /**
      * Spawns a wave of Pokémon.
      *
@@ -157,6 +165,8 @@ public class OutbreakPortal {
      * @param species The species of Pokémon to spawn.
      * @return The list of spawned Pokémon.
      */
+    protected Despawner despawner = new CustomDespawner();
+
     public List<Pokemon> spawnWave(ServerLevel level, Vec3 pos, OutbreakPortalEntity outbreakPortalEntity, String species) {
         List<Pokemon> spawned = new ArrayList<>();
         int spawnCount = outbreakPortalEntity.getOutbreakPortal().getSpawnCount();
@@ -167,21 +177,27 @@ public class OutbreakPortal {
             pokemonProp.setLevel(level.random.nextInt(1, maxLevel));
 
             // We also create a Pokémon entity to get the bounding boxes since we couldn't find another correct way to do it.
-            PokemonEntity pokemonEntity = pokemonProp.createEntity(level);
-            Pokemon pokemon1 = pokemonProp.create();
+
 
             // If the species is something it can't find, it will put out a random Pokémon. We try to catch that here,
             // this can be due to an error in the JSON.
-            if (!pokemon1.getSpecies().toString().equals(outbreakPortalEntity.getOutbreakPortal().getSpecies())) {
-                outbreakPortalEntity.entityNotSimilar(pokemon1, outbreakPortalEntity);
+            if (!pokemonProp.getSpecies().toString().equals(outbreakPortalEntity.getOutbreakPortal().getSpecies())) {
+                outbreakPortalEntity.entityNotSimilar(pokemonProp.create(), outbreakPortalEntity);
                 return Collections.emptyList();
             }
 
             double shinyChance = 1 / outbreakPortalEntity.getOutbreakPortal().getShinyChance();
             if (level.random.nextDouble() < shinyChance) {
-                pokemon1.setShiny(true);
+                pokemonProp.setShiny(true);
                 level.playSound(null, outbreakPortalEntity.getX(), outbreakPortalEntity.getY(), outbreakPortalEntity.getZ(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.AMBIENT, 1.5F, 1);
             }
+
+            PokemonEntity pokemonEntity = pokemonProp.createEntity(level);
+
+            pokemonEntity.setDespawner(despawner);
+            pokemonEntity.setPersistenceRequired();
+
+            Pokemon pokemon1 = pokemonEntity.getPokemon();
 
             // We log that spawning failed either due to the Pokémon being null (unlikely) or the spawn position being null.
             Vec3 spawnPos = outbreakPortalEntity.getOutbreakPortal().getSpawnAlgo().spawn(level, pos, outbreakPortalEntity, pokemonEntity);
