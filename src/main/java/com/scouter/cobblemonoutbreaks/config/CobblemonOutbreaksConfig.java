@@ -34,7 +34,7 @@ public class CobblemonOutbreaksConfig {
         configs.addKeyValuePair(new Pair<>("biome_specific_spawns", false), "boolean");
         configs.addKeyValuePair(new Pair<>("biome_specific_spawns_debug", false), "boolean");
         configs.addKeyValuePair(new Pair<>("min_spawn_radius", 32), "Minumum spawn radius the portal can spawn around the player, minumum is 16, maximum is 48");
-        configs.addKeyValuePair(new Pair<>("max_spaw_radius", 64), "Maximum spawn radius the portal can spawn around the player, minumum is 49 maximum is 112");
+        configs.addKeyValuePair(new Pair<>("max_spawn_radius", 64), "Maximum spawn radius the portal can spawn around the player, minumum is 49 maximum is 112");
 
     }
 
@@ -47,7 +47,7 @@ public class CobblemonOutbreaksConfig {
         BIOME_SPECIFIC_SPAWNS = CONFIG.getOrDefault("biome_specific_spawns", false);
         BIOME_SPECIFIC_SPAWNS_DEBUG = CONFIG.getOrDefault("biome_specific_spawns_debug", false);
         MIN_SPAWN_RADIUS = CONFIG.getOrDefault("min_spawn_radius", 32);
-        MAX_SPAWN_RADIUS = CONFIG.getOrDefault("max_spaw_radius", 64);
+        MAX_SPAWN_RADIUS = CONFIG.getOrDefault("max_spawn_radius", 64);
 
         System.out.println("All " + configs.getConfigsList().size() + " have been set properly");
     }

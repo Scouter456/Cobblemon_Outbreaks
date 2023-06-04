@@ -1,4 +1,4 @@
-# Cobblemon Outbreaks
+    # Cobblemon Outbreaks
 A mod that adds outbreaks to Cobblemon!
 Thanks to Shadows of Fire for his GatewaysToEternity: https://github.com/Shadows-of-Fire/GatewaysToEternity
 
@@ -13,6 +13,9 @@ Thanks to Shadows of Fire for his GatewaysToEternity: https://github.com/Shadows
 "rewards": [
 "cobblemon:rare_candy",
 "minecraft:diamond"
+],
+"biome": [
+"minecraft:plains"
 ],
 "min_spawn_radius": 48,
 "max_spawn_radius": 128,
@@ -34,6 +37,8 @@ Thanks to Shadows of Fire for his GatewaysToEternity: https://github.com/Shadows
 "spawns_per_wave":[Mandatory] Specifies the number of entity spawns per wave. It is an integer value within the range of 1 to 64.
 
 "rewards": Represents a list of rewards associated with the outbreak portal. It is an optional field and defaults to an empty list if not specified.
+
+"rewards": Represents a list of biomes for the outbreak portal. It is an optional field and defaults to a plains biome if not specified.
 
 "min_spawn_radius": Represents the minimum radius for entity spawns around the outbreak portal. It is an optional field with a default value of 48 if not specified. The value should be within the range of 20 to 72.
 

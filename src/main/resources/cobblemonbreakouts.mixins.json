@@ -1,9 +1,10 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.scouter.cobblemonbreakouts.mixin",
+  "package": "com.scouter.cobblemonoutbreaks.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "PlayerTickMixin"
   ],
   "client": [
 
