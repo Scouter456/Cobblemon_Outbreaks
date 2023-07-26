@@ -1,5 +1,6 @@
 package com.scouter.cobblemonoutbreaks.entity;
 
+import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.mojang.logging.LogUtils;
 import com.scouter.cobblemonoutbreaks.config.CobblemonOutbreaksConfig;
@@ -25,9 +26,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -47,8 +46,6 @@ public class OutbreakPortalEntity extends Entity {
 
     @Nullable
     private UUID ownerUUID;
-
-    protected Queue<ItemStack> undroppedItems = new ArrayDeque<>();
     protected final Set<UUID> currentOutbreakWaveEntities = new HashSet<>();
     private PokemonOutbreakManager outbreakManager;
     private OutbreakPortal portal;
@@ -58,14 +55,23 @@ public class OutbreakPortalEntity extends Entity {
 
     public OutbreakPortalEntity(Level level, Player placer,  ResourceLocation resourceLocation){
         super(COEntity.OUTBREAK_PORTAL, level);
+        if(OutbreaksJsonDataManager.getBiomeData().isEmpty()){
+            if(!level.isClientSide)
+                OutbreaksJsonDataManager.populateMap((ServerLevel) level);
+        }
         populatePortalFromCommand(resourceLocation);
         sendMessageToPlayer(placer);
         this.ownerUUID = placer.getUUID();
     }
 
-    public OutbreakPortalEntity(Level level, Player placer) {
+    public OutbreakPortalEntity(Level level, Player placer, Vec3 position) {
         super(COEntity.OUTBREAK_PORTAL, level);
-        setPos(findSuitableSpawnPoint(placer));
+        if(OutbreaksJsonDataManager.getBiomeData().isEmpty()){
+            if(!level.isClientSide)
+                OutbreaksJsonDataManager.populateMap((ServerLevel) level);
+        }
+
+        setPos(position);
         populatePortal();
         sendMessageToPlayer(placer);
         outbreakSpawnSound();
@@ -101,9 +107,9 @@ public class OutbreakPortalEntity extends Entity {
 
     public void sendMessageToPlayer(Player player){
         if(CobblemonOutbreaksConfig.SEND_PORTAL_SPAWN_MESSAGE) {
-            if(CobblemonOutbreaksConfig.BIOME_SPECIFIC_SPAWNS_DEBUG) {
+            if(CobblemonOutbreaksConfig.BIOME_SPECIFIC_SPAWNS_DEBUG && this.getOutbreakPortal().getSpecies() != null) {
                 MutableComponent pokemonMessage = Component.literal(this.getOutbreakPortal().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
-                MutableComponent biomeMessage = Component.literal(this.level.getBiome(this.blockPosition()).unwrapKey().get().location().toString().split(":")[1]).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
+                MutableComponent biomeMessage = Component.literal(this.level.getBiome(player.blockPosition()).unwrapKey().get().location().toString().split(":")[1]).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
                 MutableComponent outBreakMessage = Component.translatable("cobblemonoutbreaks.portal_biome_specific_spawn_debug", biomeMessage,pokemonMessage).withStyle(ChatFormatting.GREEN);
                 player.sendSystemMessage(outBreakMessage);
             } else{
@@ -116,7 +122,8 @@ public class OutbreakPortalEntity extends Entity {
 
     public void outbreakSpawnSound(){
         if(CobblemonOutbreaksConfig.OUTBREAK_PORTAL_SPAWN_SOUND) {
-            this.level.playSound(null, this.blockPosition(), SoundEvents.PORTAL_TRIGGER, SoundSource.AMBIENT, 1, 1);
+            float volume = CobblemonOutbreaksConfig.OUTBREAK_PORTAL_SPAWN_VOLUME;
+            this.level.playSound(null, this.blockPosition(), SoundEvents.PORTAL_TRIGGER, SoundSource.AMBIENT, volume, 1);
         }
     }
 
@@ -150,9 +157,23 @@ public class OutbreakPortalEntity extends Entity {
         if(changeModZ){
             randomZ = -randomZ;
         }
-        int y = this.level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,playerPosX+ randomX, playerPosZ + randomZ);
-        BlockPos blockPos = new BlockPos(playerPosX + randomX, y , playerPosZ + randomZ);
+        int y = (int)player.getY();
+        while ((level.getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).isAir() && level.getBlockState(new BlockPos(playerPosX + randomX, y - 1, playerPosZ + randomZ)).isAir()) || (!level.getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).isAir() && !level.getBlockState(new BlockPos(playerPosX + randomX, y - 1, playerPosZ + randomZ)).isAir())) {
+            y--;
+        }
 
+        LOGGER.info("block " + level.getBlockState(new BlockPos(playerPosX + randomX, y - 1, playerPosZ + randomZ)));
+        if(this.level.dimension() == Level.NETHER){
+            if(y <= 0) this.remove(RemovalReason.KILLED);
+        }
+        if(this.level.dimension() == Level.END){
+            if(y <= 0) this.remove(RemovalReason.KILLED);
+        }
+        if(this.level.dimension() == Level.OVERWORLD){
+            if(y <= -64) this.remove(RemovalReason.KILLED);
+        }
+        BlockPos blockPos = new BlockPos(playerPosX + randomX, y , playerPosZ + randomZ);
+        LOGGER.info("pos " + blockPos);
         return Vec3.atCenterOf(blockPos);
     }
 
@@ -160,16 +181,16 @@ public class OutbreakPortalEntity extends Entity {
     public void tick() {
         super.tick();
         if (!this.level.isClientSide) {
-            boolean containsPokemon = currentOutbreakWaveEntities.stream().anyMatch(uuid -> outbreakManager.containsUUID(uuid));
+            boolean containsPokemon = pokemonStillValid();
             if (getWave() >= this.getOutbreakPortal().getWaves() && !containsPokemon) {
                 if(!getHasSpawnedOne()){
-                    if(this.ownerUUID != null && CobblemonOutbreaksConfig.SEND_PORTAL_SPAWN_MESSAGE) {
+                    if(this.ownerUUID != null && CobblemonOutbreaksConfig.SEND_PORTAL_SPAWN_MESSAGE && this.getOutbreakPortal().getSpecies() != null) {
                         MutableComponent argsComponent = Component.literal(this.getOutbreakPortal().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
                         MutableComponent message = Component.translatable("cobblemonoutbreaks.gate_failed_spawning", argsComponent).withStyle(ChatFormatting.DARK_RED);
                         if(this.level.getPlayerByUUID(this.ownerUUID) !=null) this.level.getPlayerByUUID(this.ownerUUID).sendSystemMessage(message);
                     }
                 } else {
-                    if(this.ownerUUID != null && CobblemonOutbreaksConfig.SEND_PORTAL_SPAWN_MESSAGE) {
+                    if(this.ownerUUID != null && CobblemonOutbreaksConfig.SEND_PORTAL_SPAWN_MESSAGE && this.getOutbreakPortal().getSpecies() != null) {
                         MutableComponent argsComponent = Component.literal(this.getOutbreakPortal().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
                         MutableComponent message = Component.translatable("cobblemonoutbreaks.gate_finished", argsComponent).withStyle(ChatFormatting.GREEN);
                         if(this.level.getPlayerByUUID(this.ownerUUID) !=null) this.level.getPlayerByUUID(this.ownerUUID).sendSystemMessage(message);
@@ -183,10 +204,13 @@ public class OutbreakPortalEntity extends Entity {
             }
 
             if (getTicksActive() >= this.getOutbreakPortal().getMaxGateTime() && getHasSpawnedOne()) {
-                if(this.ownerUUID != null && CobblemonOutbreaksConfig.SEND_PORTAL_SPAWN_MESSAGE) {
+                if(this.ownerUUID != null && CobblemonOutbreaksConfig.SEND_PORTAL_SPAWN_MESSAGE && this.getOutbreakPortal().getSpecies() != null) {
                     MutableComponent argsComponent = Component.literal(this.getOutbreakPortal().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
                     MutableComponent message = Component.translatable("cobblemonoutbreaks.gate_time_finished", argsComponent).withStyle(ChatFormatting.RED);
                     if(this.level.getPlayerByUUID(this.ownerUUID) !=null) this.level.getPlayerByUUID(this.ownerUUID).sendSystemMessage(message);
+                }
+                if(this.getOutbreakPortal().getSpecies() == null){
+                    LOGGER.error("Species from %s is null", this.resourceLocation);
                 }
                 completeOutBreak(false);
             }
@@ -195,6 +219,8 @@ public class OutbreakPortalEntity extends Entity {
 
             setTicksActive(getTicksActive() + 1);
         } else {
+
+            //showPokemon();
             if(CobblemonOutbreaksConfig.SPAWN_PORTAL_PARTICLES && tickCount % 10 == 0) {
                 level.addParticle(ParticleTypes.FLAME, true, this.getX(), this.getY(), this.getZ(), 0, 0.2, 0);
                 level.addParticle(ParticleTypes.CRIT, true, this.getX() + this.level.random.nextDouble(), this.getY(), this.getZ() + this.level.random.nextDouble(), 0, 0.5, 0);
@@ -209,15 +235,15 @@ public class OutbreakPortalEntity extends Entity {
     public void spawnWave() {
         List<Pokemon> spawned = this.getOutbreakPortal().spawnWave((ServerLevel) this.level, this.position(), this, this.getOutbreakPortal().getSpecies());
         for (Pokemon e : spawned) {
-            this.currentOutbreakWaveEntities.add(e.getUuid());
-            outbreakManager.addPokemonWOwner(e.getUuid(), this.getUUID());
+            this.currentOutbreakWaveEntities.add(e.getEntity().getUUID());
+            outbreakManager.addPokemonWOwner(e.getEntity().getUUID(), this.getUUID());
         }
 
         if(spawned.size() > 0){
             setHasSpawnedOne(true);
         }
     }
-
+    //TODO add completion reason
     protected void completeOutBreak(boolean rewards) {
         if (rewards) {
             double completionXp = this.getOutbreakPortal().getExperience();
@@ -235,6 +261,38 @@ public class OutbreakPortalEntity extends Entity {
 
 
         this.remove(RemovalReason.DISCARDED);
+    }
+    /**
+     *
+     * An extra check every ten minutes to check if the world still has the pokemon and then remove it from the map
+     * Just an extra insurance to ensure that the portals wont be duds
+     *
+     * */
+    public boolean pokemonStillValid() {
+        if(this.level.isClientSide) return false;
+        ServerLevel serverLevel = (ServerLevel) this.level;
+        boolean containsPokemon = currentOutbreakWaveEntities.stream().anyMatch(uuid -> outbreakManager.containsUUID(uuid));
+        boolean worldHasPokemon = false;
+
+        if(tickCount % 12000 != 0) return containsPokemon;
+        Set<UUID> toRemove = new HashSet<>();
+        for(UUID uuid1 : currentOutbreakWaveEntities){
+            PokemonEntity entity = (PokemonEntity) serverLevel.getEntity(uuid1);
+            if(entity == null)
+            {
+                PokemonOutbreakManager pokemonOutbreakManager = PokemonOutbreakManager.get(serverLevel);
+                if(pokemonOutbreakManager.containsUUID(uuid1)){
+                    pokemonOutbreakManager.removePokemonUUID(uuid1);
+                }
+                toRemove.add(uuid1);
+            } else {
+                worldHasPokemon = true;
+            }
+        }
+
+        currentOutbreakWaveEntities.removeAll(toRemove);
+
+        return containsPokemon && worldHasPokemon;
     }
 
     public OutbreakPortal getOutbreakPortal() {
@@ -382,6 +440,10 @@ public class OutbreakPortalEntity extends Entity {
         this.entityData.set(WAVE, wave);
     }
 
+    public UUID getOwnerUUID() {
+        return ownerUUID;
+    }
+
     @Override
     public Packet<?> getAddEntityPacket() {
         return new ClientboundAddEntityPacket(this);
@@ -396,6 +458,9 @@ public class OutbreakPortalEntity extends Entity {
         return false;
     }
 
+    public ResourceLocation getResourceLocation() {
+        return resourceLocation;
+    }
 
     public void removeFromSet(UUID pokemon) {
         this.currentOutbreakWaveEntities.remove(pokemon);

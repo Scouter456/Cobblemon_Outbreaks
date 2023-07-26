@@ -17,15 +17,15 @@ Thanks to Shadows of Fire for his GatewaysToEternity: https://github.com/Shadows
 "biome": [
 "minecraft:plains"
 ],
-"min_spawn_radius": 48,
-"max_spawn_radius": 128,
 "shiny_chance": 1024.0,
 "experience_reward": 0,
 "spawn_range": 25.0,
 "leash_range": 32.0,
 "spawn_algorithm": "open_field",
-"gate_timer": 36000
-
+"gate_timer": 36000,
+"level_algorithm": "scaled"
+"min_pokemon_level": 1 [Example] (Does nothing needs min_max algorithm)
+"max_pokemon_level": 10 [Example] (Does nothing needs min_max algorithm)
 }
 
 "species": [Mandatory] Represents the species of the entity associated with the outbreak portal. It is a string value.
@@ -40,10 +40,6 @@ Thanks to Shadows of Fire for his GatewaysToEternity: https://github.com/Shadows
 
 "rewards": Represents a list of biomes for the outbreak portal. It is an optional field and defaults to a plains biome if not specified.
 
-"min_spawn_radius": Represents the minimum radius for entity spawns around the outbreak portal. It is an optional field with a default value of 48 if not specified. The value should be within the range of 20 to 72.
-
-"max_spawn_radius": Represents the maximum radius for entity spawns around the outbreak portal. It is an optional field with a default value of 128 if not specified. The value should be within the range of 72 to 256.
-
 "shiny_chance": Specifies the chance of encountering a shiny entity during the outbreak. It is an optional field with a default value of 1024.0 if not specified. The value should be within the range of 1 to 10,000,000.
 
 "experience_reward": Indicates the amount of experience rewarded for participating in the outbreak. It is an optional field with a default value of 0 if not specified.
@@ -55,4 +51,11 @@ Thanks to Shadows of Fire for his GatewaysToEternity: https://github.com/Shadows
 "spawn_algorithm": Specifies the spawn algorithm used for entity spawns during the outbreak. It is an optional field with a default value of "open_field" if not specified. The value should be one of the predefined spawn algorithms.
 
 "gate_timer": Represents the duration of the outbreak gate timer in ticks. It is an optional field with a default value of 36000 if not specified.
+"min_pokemon_level": the minimum level of the pokemon that should spawn in the portal
+"max_pokemon_level": the maximum level of the pokemon that should spawn in the portal, should always be higher than min_pokemon_level
 
+"level_algorithm": Specifies the algorithm used to determine the levels for the pokemon, these being: cobblemonoutbreaks:random, cobblemonoutbreaks:scaled, cobblemonoutbreaks:min_max, defaults to cobblemonoutbreaks:scaled
+
+cobblemonoutbreaks:random: returns a random level from 1 to 100
+cobblemonoutbreaks:scaled returns a level based on the average pokemon level in the players party
+cobblemonoutbreaks:min_max returns a random level between the min_pokemon_level and max_pokemon_level

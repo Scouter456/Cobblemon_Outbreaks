@@ -39,7 +39,7 @@ public class SpawnAlgorithms {
     }
 
     public static final Codec<SpawnAlgorithm> CODEC = ExtraCodecs.stringResolverCodec(sa -> NAMED_ALGORITHMS.inverse().get(sa).toString(), key -> NAMED_ALGORITHMS.get(new ResourceLocation(key)));
-    public static final int MAX_SPAWN_TRIES = 15;
+    public static final int MAX_SPAWN_TRIES = 25;
 
     /**
      * The Open Field Algorithm selects random spawn positions within the spawn radius, and places entities on the ground.<br>
@@ -58,8 +58,13 @@ public class SpawnAlgorithms {
             z = pos.z() + (level.random.nextDouble() - level.random.nextDouble()) * spawnRange + 0.5D;
         }
 
-        if(level.getBlockState(new BlockPos(x, y - 1, z)).isAir()){
-            y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) x, (int) z);
+
+        while (level.getBlockState(new BlockPos(x, y - 1, z)).isAir() && y > level.getMinBuildHeight()) {
+            y--;
+        }
+
+        while (!level.noCollision(getAABB(x, y, z, pokemon))) {
+            y++;
         }
 
         if (outbreakPortalEntity.distanceToSqr(x, y, z) > outbreakPortalEntity.getOutbreakPortal().getLeashRangeSq()) return null;
@@ -91,8 +96,12 @@ public class SpawnAlgorithms {
             z = pos.z() + scaleFactor * (level.random.nextDouble() - level.random.nextDouble()) * spawnRange + 0.5D;
         }
 
-        if(level.getBlockState(new BlockPos(x, y - 1, z)).isAir()){
-            y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) x, (int) z);
+        while (level.getBlockState(new BlockPos(x, y - 1, z)).isAir() && y > level.getMinBuildHeight()) {
+            y--;
+        }
+
+        while (!level.noCollision(getAABB(x, y, z, pokemon))) {
+            y++;
         }
 
         if (outbreakPortal.distanceToSqr(x, y, z) > outbreakPortal.getOutbreakPortal().getLeashRangeSq()) return null;
@@ -156,8 +165,12 @@ public class SpawnAlgorithms {
             }
         }
 
-        if (level.getBlockState(new BlockPos(x, y - 1, z)).isAir()) {
-            y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) x, (int) z);
+        while (level.getBlockState(new BlockPos(x, y - 1, z)).isAir() && y > level.getMinBuildHeight()) {
+            y--;
+        }
+
+        while (!level.noCollision(getAABB(x, y, z, pokemon))) {
+            y++;
         }
         blockPos = new BlockPos(blockPos.getX(), y, blockPos.getZ());
         if (outbreakPortal.distanceToSqr(x, y, z) > outbreakPortal.getOutbreakPortal().getLeashRangeSq()) return null;
@@ -184,8 +197,12 @@ public class SpawnAlgorithms {
             z = z + (level.random.nextDouble() - level.random.nextDouble()) * spawnRange + 0.5D;
         }
 
-        if(level.getBlockState(new BlockPos(x, y - 1, z)).isAir()){
-            y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) x, (int) z);
+        while (level.getBlockState(new BlockPos(x, y - 1, z)).isAir() && y > level.getMinBuildHeight()) {
+            y--;
+        }
+
+        while (!level.noCollision(getAABB(x, y, z, pokemon))) {
+            y++;
         }
 
         if (outbreakPortalEntity.distanceToSqr(x, y, z) > outbreakPortalEntity.getOutbreakPortal().getLeashRangeSq()) return null;

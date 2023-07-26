@@ -13,7 +13,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -33,16 +35,16 @@ public class OutbreakPortal {
                     Codec.INT.fieldOf("waves").forGetter(w -> w.waves),
                     Codec.intRange(1, 64).fieldOf("spawns_per_wave").forGetter(s -> s.spawnsPerWave),
                     Registry.ITEM.byNameCodec().listOf().optionalFieldOf("rewards", Collections.emptyList()).forGetter(i -> i.rewards),
-                    Codec.intRange(20,72).optionalFieldOf("min_spawn_radius", 48).forGetter(e -> e.minSpawnRadius),
-                    Codec.intRange(72, 256).optionalFieldOf("max_spawn_radius", 128).forGetter(e -> e.maxSpawnRadius),
                     Codec.doubleRange(1,10000000).optionalFieldOf("shiny_chance",1024D).forGetter(r -> r.shinyChance),
                     Codec.INT.optionalFieldOf("experience_reward", 0).forGetter(e -> e.experience),
                     Codec.doubleRange(15D,40D).fieldOf("spawn_range").forGetter(r -> r.spawnRange),
                     Codec.doubleRange(15D,40D).optionalFieldOf("leash_range", 32D).forGetter(g -> g.leashRange),
                     SpawnAlgorithms.CODEC.optionalFieldOf("spawn_algorithm", SpawnAlgorithms.NAMED_ALGORITHMS.get(prefix("clustered"))).forGetter(g -> g.spawnAlgo),
+                    SpawnLevelAlgorithms.CODEC.optionalFieldOf("level_algorithm", SpawnLevelAlgorithms.NAMED_ALGORITHMS.get(prefix("scaled"))).forGetter(g -> g.spawnLevelAlgo),
                     Codec.INT.optionalFieldOf("gate_timer", 36000).forGetter(t -> t.gateTimer),
+                    Codec.intRange(1, 99).optionalFieldOf("min_pokemon_level", 100).forGetter(s -> s.minPokemonLevel),
                     Codec.intRange(2, 100).optionalFieldOf("max_pokemon_level", 100).forGetter(s -> s.maxPokemonLevel),
-                    ResourceLocation.CODEC.listOf().optionalFieldOf("biome", Collections.singletonList(new ResourceLocation("plains"))).forGetter(b -> b.spawnBiome)
+                    ExtraCodecs.TAG_OR_ELEMENT_ID.listOf().optionalFieldOf("biome", Collections.emptyList()).forGetter(t -> t.biomeTags)
                     )
             .apply(inst, OutbreakPortal::new)
     );
@@ -52,18 +54,21 @@ public class OutbreakPortal {
     protected int experience;
     protected int waves;
     protected int spawnsPerWave;
-    protected int minSpawnRadius;
-    protected int maxSpawnRadius;
     protected int gateTimer;
     protected int maxPokemonLevel;
+    protected int minPokemonLevel;
     protected double spawnRange;
     protected double leashRange;
 
     protected double shinyChance;
 
     protected final SpawnAlgorithms.SpawnAlgorithm spawnAlgo;
+    protected final SpawnLevelAlgorithms.SpawnLevelAlgorithm spawnLevelAlgo;
     protected final List<ResourceLocation> spawnBiome;
+    protected final List<ResourceLocation> spawnBiomeTags;
+    protected final List<ExtraCodecs.TagOrElementLocation> biomeTags;
 
+    private ResourceLocation jsonLocation;
 
     /**
      * Creates an OutbreakPortal instance.
@@ -82,9 +87,9 @@ public class OutbreakPortal {
      * @param spawnBiome     The biomes the entity can spawn in.
      */
     public OutbreakPortal(String species, int waves, int spawnsPerWave, List<Item> rewards,
-                          int minSpawnRadius, int maxSpawnRadius, double shinyChance,
-                          int experience, double spawnRange, double leashRange,
-                          SpawnAlgorithms.SpawnAlgorithm spawnAlgo, int gateTimer, int maxPokemonLevel, List<ResourceLocation> spawnBiome) {
+                          double shinyChance, int experience, double spawnRange, double leashRange,
+                          SpawnAlgorithms.SpawnAlgorithm spawnAlgo, SpawnLevelAlgorithms.SpawnLevelAlgorithm spawnLevelAlgo,
+                          int gateTimer, int minPokemonLevel, int maxPokemonLevel, List<ExtraCodecs.TagOrElementLocation> spawnBiome) {
         this.species = species;
         this.rewards = rewards;
         this.experience = experience;
@@ -93,12 +98,40 @@ public class OutbreakPortal {
         this.spawnRange = spawnRange;
         this.leashRange = leashRange;
         this.spawnAlgo = spawnAlgo;
-        this.minSpawnRadius = minSpawnRadius;
-        this.maxSpawnRadius = maxSpawnRadius;
+        this.spawnLevelAlgo = spawnLevelAlgo;
         this.shinyChance = shinyChance;
         this.gateTimer = gateTimer;
+        this.minPokemonLevel = minPokemonLevel;
         this.maxPokemonLevel = maxPokemonLevel;
-        this.spawnBiome = spawnBiome;
+        List<ResourceLocation> spawnBiomeTags = new ArrayList<>();
+        List<ResourceLocation> spawnBiomes = new ArrayList<>();
+        for(ExtraCodecs.TagOrElementLocation tagOrElementLocation : spawnBiome){
+            if(tagOrElementLocation.tag()){
+                spawnBiomeTags.add(tagOrElementLocation.id());
+            } else {
+                spawnBiomes.add(tagOrElementLocation.id());
+            }
+        }
+
+        this.spawnBiome = spawnBiomes;
+        this.spawnBiomeTags = spawnBiomeTags;
+
+        this.biomeTags = spawnBiome;
+    }
+
+
+    public void setJsonLocation(ResourceLocation location){
+        this.jsonLocation = location;
+    }
+
+
+    public ResourceLocation getJsonLocation() {
+        try {
+            return jsonLocation;
+        } catch (Exception e){
+            LOGGER.error("Could not find jsonLocation due to {}", e);
+        }
+        return new ResourceLocation("");
     }
 
     public List<Item> getRewards() {
@@ -129,12 +162,8 @@ public class OutbreakPortal {
         return this.spawnAlgo;
     }
 
-    public int getMinSpawnRadius() {
-        return this.minSpawnRadius;
-    }
-
-    public int getMaxSpawnRadius() {
-        return this.maxSpawnRadius;
+    public SpawnLevelAlgorithms.SpawnLevelAlgorithm getSpawnLevelAlgo() {
+        return this.spawnLevelAlgo;
     }
 
     public double getExperience() {
@@ -151,6 +180,14 @@ public class OutbreakPortal {
     }
     public int getMaxPokemonLevel() {
         return this.maxPokemonLevel;
+    }
+
+    public int getMinPokemonLevel() {
+        return this.minPokemonLevel;
+    }
+
+    public List<ResourceLocation> getSpawnBiomeTags() {
+        return this.spawnBiomeTags;
     }
 
     public List<ResourceLocation> getSpawnBiome() {
@@ -173,12 +210,21 @@ public class OutbreakPortal {
         for (int i = 0; i < spawnCount; i++) {
             // If the species is something it can't find, it will put out a random Pokémon
             PokemonProperties pokemonProp = PokemonProperties.Companion.parse("species=" + species, " ", "=");
-            int maxLevel = outbreakPortalEntity.getOutbreakPortal().getMaxPokemonLevel();
-            pokemonProp.setLevel(level.random.nextInt(1, maxLevel));
+            Player player = level.getPlayerByUUID(outbreakPortalEntity.getOwnerUUID());
+            int spawnLevel = outbreakPortalEntity.getOutbreakPortal().getSpawnLevelAlgo().getLevel(level, player, outbreakPortalEntity);
 
+            pokemonProp.setLevel(spawnLevel);
             // We also create a Pokémon entity to get the bounding boxes since we couldn't find another correct way to do it.
 
 
+
+            if(pokemonProp.getSpecies() == null){
+                for(int j = 0; j < 4; j++){
+                    LOGGER.error("Species from {} is null, the species: {} is probably spelled incorrectly", outbreakPortalEntity.getResourceLocation(), species);
+                }
+                outbreakPortalEntity.completeOutBreak(false);
+                return Collections.emptyList();
+            }
             // If the species is something it can't find, it will put out a random Pokémon. We try to catch that here,
             // this can be due to an error in the JSON.
             if (!pokemonProp.getSpecies().toString().equals(outbreakPortalEntity.getOutbreakPortal().getSpecies())) {
@@ -196,7 +242,6 @@ public class OutbreakPortal {
 
             pokemonEntity.setDespawner(despawner);
             pokemonEntity.setPersistenceRequired();
-
             Pokemon pokemon1 = pokemonEntity.getPokemon();
 
             // We log that spawning failed either due to the Pokémon being null (unlikely) or the spawn position being null.
@@ -209,7 +254,8 @@ public class OutbreakPortal {
 
             pokemon1.sendOut(level, spawnPos, (m) -> null);
             if (CobblemonOutbreaksConfig.OUTBREAK_PORTAL_SPAWN_SOUND) {
-                level.playSound(null, spawnPos.x(), spawnPos.y(), spawnPos.z(), SoundEvents.PORTAL_TRAVEL, SoundSource.HOSTILE, 0.5F, 1);
+                float volume = CobblemonOutbreaksConfig.OUTBREAK_PORTAL_POKEMON_SPAWN_VOLUME;
+                level.playSound(null, spawnPos.x(), spawnPos.y(), spawnPos.z(), SoundEvents.PORTAL_TRAVEL, SoundSource.HOSTILE, volume, 1);
             }
 
             spawned.add(pokemon1);
