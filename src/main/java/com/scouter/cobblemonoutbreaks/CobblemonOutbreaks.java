@@ -137,15 +137,8 @@ public class CobblemonOutbreaks implements ModInitializer {
             ServerLevel serverLevel = (ServerLevel) server.getLevel();
             PokemonOutbreakManager outbreakManager = PokemonOutbreakManager.get(serverLevel);
             UUID pokemonUUID = pokemonEntity.getUUID();
-            LOGGER.info("Removing " + pokemonEntity);
             if (!outbreakManager.containsUUID(pokemonUUID)) return;
             UUID ownerUUID = outbreakManager.getOwnerUUID(pokemonUUID);
-            OutbreakPortalEntity outbreakPortal = (OutbreakPortalEntity) serverlevel.getEntity(ownerUUID);
-            //if(outbreakPortal != null){
-            //    outbreakPortal.removeFromSet(pokemonUUID);
-            //}
-
-            LOGGER.info("contains! " + pokemonEntity);
             outbreakManager.removePokemonUUID(pokemonUUID);
             outbreakManager.addPokemonWOwnerTemp(pokemonUUID, ownerUUID);
             return;
