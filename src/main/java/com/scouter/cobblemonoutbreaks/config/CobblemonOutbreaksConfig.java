@@ -1,6 +1,6 @@
 package com.scouter.cobblemonoutbreaks.config;
-import com.mojang.datafixers.util.Pair;
 
+import com.mojang.datafixers.util.Pair;
 import com.scouter.cobblemonoutbreaks.CobblemonOutbreaks;
 
 public class CobblemonOutbreaksConfig {

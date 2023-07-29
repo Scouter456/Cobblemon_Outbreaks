@@ -1,6 +1,5 @@
 package com.scouter.cobblemonoutbreaks.mixin;
 
-import com.scouter.cobblemonoutbreaks.CobblemonOutbreaks;
 import com.scouter.cobblemonoutbreaks.config.CobblemonOutbreaksConfig;
 import com.scouter.cobblemonoutbreaks.data.OutbreakPlayerManager;
 import com.scouter.cobblemonoutbreaks.entity.OutbreakPortalEntity;
@@ -9,10 +8,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -49,8 +46,8 @@ public class PlayerTickMixin {
             }
             for (int i = 0; i < outbreakCount; i++) {
 
-                Vec3 pos = findSuitableSpawnPoint(player);
-                int y = (int) pos.y();
+                BlockPos pos = findSuitableSpawnPoint(player);
+                int y = (int) pos.getY();
                 if(player.level.dimension() == Level.NETHER){
                     if(y <= 0){
                         sendMessageToPlayer(player, y);
@@ -70,13 +67,13 @@ public class PlayerTickMixin {
                     }
                 }
                 OutbreakPortalEntity outbreakPortal = new OutbreakPortalEntity(level, player, pos);
-                level.addFreshEntity(outbreakPortal);
+                //level.addFreshEntity(outbreakPortal);
             }
             outbreakPlayerManager.setTimeLeft(player.getUUID(), outbreakTimer);
         }
     }
 
-    public Vec3 findSuitableSpawnPoint(Player player){
+    public BlockPos findSuitableSpawnPoint(Player player){
         int maxRange = CobblemonOutbreaksConfig.MAX_SPAWN_RADIUS;
         int minRange = CobblemonOutbreaksConfig.MIN_SPAWN_RADIUS;
 
@@ -118,7 +115,7 @@ public class PlayerTickMixin {
         }
 
         BlockPos blockPos = new BlockPos(playerPosX + randomX, y , playerPosZ + randomZ);
-        return Vec3.atCenterOf(blockPos);
+        return blockPos;
     }
 
     public void sendMessageToPlayer(Player player, int y){

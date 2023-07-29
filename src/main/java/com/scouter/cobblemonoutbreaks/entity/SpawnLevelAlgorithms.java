@@ -2,7 +2,6 @@ package com.scouter.cobblemonoutbreaks.entity;
 
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore;
-import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -12,9 +11,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec3;
-
-import java.util.Iterator;
 
 import static com.scouter.cobblemonoutbreaks.CobblemonOutbreaks.LOGGER;
 import static com.scouter.cobblemonoutbreaks.CobblemonOutbreaks.prefix;
