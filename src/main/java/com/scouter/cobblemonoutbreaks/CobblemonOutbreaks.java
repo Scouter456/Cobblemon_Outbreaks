@@ -84,7 +84,7 @@ public class CobblemonOutbreaks implements ModInitializer {
      */
     public static void pokemonCapture() {
         CobblemonEvents.POKEMON_CAPTURED.subscribe(Priority.HIGH, event -> {
-            if (!(event.getPlayer().level instanceof ServerLevel serverLevel)) return Unit.INSTANCE;
+            if (!(event.getPlayer().level() instanceof ServerLevel serverLevel)) return Unit.INSTANCE;
             PokemonOutbreakManager outbreakManager = PokemonOutbreakManager.get(serverLevel);
             UUID pokemonUUID = event.getPokemon().getUuid();
             if (!outbreakManager.containsUUID(pokemonUUID)) return Unit.INSTANCE;

@@ -430,7 +430,7 @@ public class OutbreakPortalEntity {
     }
 
     public void setBlockPosition(Vec3 blockPosition) {
-        BlockPos pos = new BlockPos(blockPosition);
+        BlockPos pos = BlockPos.containing(blockPosition.x(), blockPosition.y(), blockPosition.z());
         this.blockPosition = pos;
     }
 

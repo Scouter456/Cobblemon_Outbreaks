@@ -33,7 +33,7 @@ public class PlayerTickMixin {
     @Inject(method = "tick", at = @At("HEAD"))
     private void outbreakPortal$playerTick(CallbackInfo ci) {
         Player player = (Player) (Object) this;
-        Level level = player.level;
+        Level level = player.level();
 
         if (!level.isClientSide) {
             OutbreakPlayerManager outbreakPlayerManager = OutbreakPlayerManager.get((ServerLevel) level);
@@ -48,19 +48,19 @@ public class PlayerTickMixin {
 
                 BlockPos pos = findSuitableSpawnPoint(player);
                 int y = (int) pos.getY();
-                if(player.level.dimension() == Level.NETHER){
+                if(player.level().dimension() == Level.NETHER){
                     if(y <= 0){
                         sendMessageToPlayer(player, y);
                         continue;
                     }
                 }
-                if(player.level.dimension() == Level.END){
+                if(player.level().dimension() == Level.END){
                     if(y <= 0) {
                         sendMessageToPlayer(player, y);
                         continue;
                     }
                 }
-                if(player.level.dimension() == Level.OVERWORLD){
+                if(player.level().dimension() == Level.OVERWORLD){
                     if(y <= -64){
                         sendMessageToPlayer(player, y);
                         continue;
@@ -86,8 +86,8 @@ public class PlayerTickMixin {
             minRange = 32;
         }
 
-        int randomX = player.level.random.nextInt(minRange) + (player.level.random.nextBoolean() ? 5 : -5);
-        int randomZ = player.level.random.nextInt(maxRange) + (player.level.random.nextBoolean() ? 5 : -5);
+        int randomX = player.level().random.nextInt(minRange) + (player.level().random.nextBoolean() ? 5 : -5);
+        int randomZ = player.level().random.nextInt(maxRange) + (player.level().random.nextBoolean() ? 5 : -5);
 
 
 
@@ -95,8 +95,8 @@ public class PlayerTickMixin {
         int playerPosY = player.getBlockY();
         int playerPosZ = player.getBlockZ();
 
-        boolean changeModX = player.level.random.nextBoolean();
-        boolean changeModZ = player.level.random.nextBoolean();
+        boolean changeModX = player.level().random.nextBoolean();
+        boolean changeModZ = player.level().random.nextBoolean();
 
         if(changeModX){
             randomX = -randomX;
@@ -106,11 +106,11 @@ public class PlayerTickMixin {
             randomZ = -randomZ;
         }
         int y = (int)player.getY();
-        while ((player.level.getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).isAir() && player.level.getBlockState(new BlockPos(playerPosX + randomX, y - 1, playerPosZ + randomZ)).isAir()) ||
-                (!player.level.getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).isAir() && !player.level.getBlockState(new BlockPos(playerPosX + randomX, y - 1, playerPosZ + randomZ)).isAir()) ||
-                (!player.level.getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).isAir() && player.level.getBlockState(new BlockPos(playerPosX + randomX, y - 1, playerPosZ + randomZ)).isAir())) {
+        while ((player.level().getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).isAir() && player.level().getBlockState(new BlockPos(playerPosX + randomX, y - 1, playerPosZ + randomZ)).isAir()) ||
+                (!player.level().getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).isAir() && !player.level().getBlockState(new BlockPos(playerPosX + randomX, y - 1, playerPosZ + randomZ)).isAir()) ||
+                (!player.level().getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).isAir() && player.level().getBlockState(new BlockPos(playerPosX + randomX, y - 1, playerPosZ + randomZ)).isAir())) {
             if(y < -64) break;
-            if(!player.level.getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).getFluidState().isEmpty()) break;
+            if(!player.level().getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).getFluidState().isEmpty()) break;
             y--;
         }
 
