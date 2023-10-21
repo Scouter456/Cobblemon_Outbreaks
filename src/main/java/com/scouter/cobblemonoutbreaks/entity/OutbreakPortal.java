@@ -38,8 +38,8 @@ public class OutbreakPortal {
                     BuiltInRegistries.ITEM.byNameCodec().listOf().optionalFieldOf("rewards", Collections.emptyList()).forGetter(i -> i.rewards),
                     Codec.doubleRange(1,10000000).optionalFieldOf("shiny_chance",1024D).forGetter(r -> r.shinyChance),
                     Codec.INT.optionalFieldOf("experience_reward", 0).forGetter(e -> e.experience),
-                    Codec.doubleRange(15D,40D).fieldOf("spawn_range").forGetter(r -> r.spawnRange),
-                    Codec.doubleRange(15D,40D).optionalFieldOf("leash_range", 32D).forGetter(g -> g.leashRange),
+                    Codec.doubleRange(5D,40D).fieldOf("spawn_range").forGetter(r -> r.spawnRange),
+                    Codec.doubleRange(5D,40D).optionalFieldOf("leash_range", 32D).forGetter(g -> g.leashRange),
                     SpawnAlgorithms.CODEC.optionalFieldOf("spawn_algorithm", SpawnAlgorithms.NAMED_ALGORITHMS.get(prefix("clustered"))).forGetter(g -> g.spawnAlgo),
                     SpawnLevelAlgorithms.CODEC.optionalFieldOf("level_algorithm", SpawnLevelAlgorithms.NAMED_ALGORITHMS.get(prefix("scaled"))).forGetter(g -> g.spawnLevelAlgo),
                     Codec.INT.optionalFieldOf("gate_timer", 36000).forGetter(t -> t.gateTimer),
@@ -220,9 +220,18 @@ public class OutbreakPortal {
 
 
             if(pokemonProp.getSpecies() == null){
-                for(int j = 0; j < 4; j++){
-                    LOGGER.error("Species from {} is null, the species: {} is probably spelled incorrectly", outbreakPortalEntity.getResourceLocation(), species);
+                if(outbreakPortalEntity.getOutbreakPortal().getSpecies().equals("default")){
+                    for(int j = 0; j < 4; j++){
+                        LOGGER.error("Species from {} is null, the species: {} is probably spelled incorrectly", outbreakPortalEntity.getResourceLocation(), species);
+                        LOGGER.error("This is a default setting, it means that you do not have any correct json files in your datapack and no outbreaks can spawn!");
+                        LOGGER.error("If you think this is an error please report it to the developer");
+                    }
+                } else {
+                    for(int j = 0; j < 4; j++){
+                        LOGGER.error("Species from {} is null, the species: {} is probably spelled incorrectly", outbreakPortalEntity.getResourceLocation(), species);
+                    }
                 }
+
                 outbreakPortalEntity.completeOutBreak(false);
                 return Collections.emptyList();
             }

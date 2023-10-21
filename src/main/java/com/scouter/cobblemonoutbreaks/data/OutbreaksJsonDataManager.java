@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import com.scouter.cobblemonoutbreaks.entity.OutbreakPortal;
+import com.scouter.cobblemonoutbreaks.entity.SpawnAlgorithms;
+import com.scouter.cobblemonoutbreaks.entity.SpawnLevelAlgorithms;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -38,6 +40,10 @@ public class OutbreaksJsonDataManager extends SimpleJsonResourceReloadListener i
 
     private final String folderName;
     public static final Logger LOGGER = LoggerFactory.getLogger("cobblemonoutbreaks");
+    private static final OutbreakPortal PORTAL = new OutbreakPortal("default", 5,5,Collections.emptyList(), 1024, 10, 15D, 32D,
+            SpawnAlgorithms.NAMED_ALGORITHMS.get(prefix("clustered")),
+            SpawnLevelAlgorithms.NAMED_ALGORITHMS.get(prefix("scaled")),
+            36000, 10, 100, Collections.emptyList());
     public static final Gson STANDARD_GSON = new Gson();
     protected static Map<ResourceLocation, OutbreakPortal> data = new HashMap<>();
     protected static Map<ResourceKey<Biome>, Map<ResourceLocation, OutbreakPortal>> biomeData = new HashMap<>();
@@ -49,8 +55,8 @@ public class OutbreaksJsonDataManager extends SimpleJsonResourceReloadListener i
         return biomeData;
     }
 
-    public static OutbreakPortal getPortalFromRl(ResourceLocation resourceLocation, OutbreakPortal outbreakPortal) {
-        return data.getOrDefault(resourceLocation, outbreakPortal);
+    public static OutbreakPortal getPortalFromRl(ResourceLocation resourceLocation) {
+        return data.getOrDefault(resourceLocation, PORTAL);
     }
 
     public static Map<ResourceLocation, OutbreakPortal> getData() {
@@ -77,7 +83,7 @@ public class OutbreaksJsonDataManager extends SimpleJsonResourceReloadListener i
     public static Map<ResourceLocation, OutbreakPortal> getRandomPortal(Level level) {
         Map<ResourceLocation, OutbreakPortal> map = new HashMap<>();
         ResourceLocation rl = getRandomResourceLocation(level);
-        OutbreakPortal outbreakPortal = data.get(rl);
+        OutbreakPortal outbreakPortal = data.getOrDefault(rl,PORTAL);
         map.put(rl, outbreakPortal);
         return map;
     }
@@ -91,7 +97,10 @@ public class OutbreaksJsonDataManager extends SimpleJsonResourceReloadListener i
     }
 
     private static ResourceLocation getRandomResourceLocation(Level level) {
-        return resourceLocationList.get(level.random.nextInt(resourceLocationList.size()));
+        if (!resourceLocationList.isEmpty()) {
+            return resourceLocationList.get(level.random.nextInt(resourceLocationList.size()));
+        }
+        return null;
     }
 
     public static void populateMap(ServerLevel level) {

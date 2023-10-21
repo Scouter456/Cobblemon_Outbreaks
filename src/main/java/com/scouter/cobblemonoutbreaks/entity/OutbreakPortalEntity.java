@@ -99,7 +99,7 @@ public class OutbreakPortalEntity {
     public void populatePortalFromCommand(ResourceLocation resourceLocation){
         if (!level.isClientSide) {
             this.resourceLocation = resourceLocation;
-                this.portal = OutbreaksJsonDataManager.getPortalFromRl(resourceLocation, null);
+                this.portal = OutbreaksJsonDataManager.getPortalFromRl(resourceLocation);
             this.outbreakManager = PokemonOutbreakManager.get((ServerLevel) level);
         }
     }
@@ -140,13 +140,13 @@ public class OutbreakPortalEntity {
                     if(this.ownerUUID != null && CobblemonOutbreaksConfig.SEND_PORTAL_SPAWN_MESSAGE) {
                         MutableComponent argsComponent = Component.literal(this.getOutbreakPortal().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
                         MutableComponent message = Component.translatable("cobblemonoutbreaks.gate_failed_spawning", argsComponent).withStyle(ChatFormatting.DARK_RED);
-                        if(level.getPlayerByUUID(this.ownerUUID) !=null) level.getPlayerByUUID(this.ownerUUID).sendSystemMessage(message);
+                        if(level.getPlayerByUUID(this.ownerUUID) !=null && level != null) level.getPlayerByUUID(this.ownerUUID).sendSystemMessage(message);
                     }
                 } else {
                     if(this.ownerUUID != null && CobblemonOutbreaksConfig.SEND_PORTAL_SPAWN_MESSAGE) {
                         MutableComponent argsComponent = Component.literal(this.getOutbreakPortal().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
                         MutableComponent message = Component.translatable("cobblemonoutbreaks.gate_finished", argsComponent).withStyle(ChatFormatting.GREEN);
-                        if(level.getPlayerByUUID(this.ownerUUID) !=null) level.getPlayerByUUID(this.ownerUUID).sendSystemMessage(message);
+                        if(level.getPlayerByUUID(this.ownerUUID) !=null && level != null) level.getPlayerByUUID(this.ownerUUID).sendSystemMessage(message);
                     }
                 }
                 completeOutBreak(true);
@@ -163,7 +163,7 @@ public class OutbreakPortalEntity {
                 if(this.ownerUUID != null && CobblemonOutbreaksConfig.SEND_PORTAL_SPAWN_MESSAGE) {
                     MutableComponent argsComponent = Component.literal(this.getOutbreakPortal().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
                     MutableComponent message = Component.translatable("cobblemonoutbreaks.gate_time_finished", argsComponent).withStyle(ChatFormatting.RED);
-                    if(level.getPlayerByUUID(this.ownerUUID) !=null) level.getPlayerByUUID(this.ownerUUID).sendSystemMessage(message);
+                    if(level.getPlayerByUUID(this.ownerUUID) !=null && level != null) level.getPlayerByUUID(this.ownerUUID).sendSystemMessage(message);
                 }
                 completeOutBreak(false);
             }
@@ -194,29 +194,31 @@ public class OutbreakPortalEntity {
         boolean containsPokemon = currentOutbreakWaveEntities.stream().anyMatch(uuid -> outbreakManager.containsUUID(uuid));
         boolean worldHasPokemon = false;
 
-        if(tickCount % 12000 == 0) return containsPokemon;
-        Set<UUID> toRemove = new HashSet<>();
-        for(UUID uuid1 : currentOutbreakWaveEntities){
-            PokemonEntity entity = (PokemonEntity) serverLevel.getEntity(uuid1);
-            if(entity == null)
-            {
-                PokemonOutbreakManager pokemonOutbreakManager = PokemonOutbreakManager.get(serverLevel);
-                if(pokemonOutbreakManager.containsUUID(uuid1)){
-                    pokemonOutbreakManager.removePokemonUUID(uuid1);
+        if(tickCount % 12000 != 0 && containsPokemon) return containsPokemon;
+        if(tickCount % 100 == 0) {
+            Set<UUID> toRemove = new HashSet<>();
+            for (UUID uuid1 : currentOutbreakWaveEntities) {
+                PokemonEntity entity = (PokemonEntity) serverLevel.getEntity(uuid1);
+                if (entity == null) {
+                    PokemonOutbreakManager pokemonOutbreakManager = PokemonOutbreakManager.get(serverLevel);
+                    if (pokemonOutbreakManager.containsUUID(uuid1)) {
+                        pokemonOutbreakManager.removePokemonUUID(uuid1);
+                    }
+                    toRemove.add(uuid1);
+                } else {
+                    worldHasPokemon = true;
                 }
-                toRemove.add(uuid1);
-            } else {
-                worldHasPokemon = true;
             }
+
+            currentOutbreakWaveEntities.removeAll(toRemove);
+
+            return containsPokemon && worldHasPokemon;
         }
-
-        currentOutbreakWaveEntities.removeAll(toRemove);
-
-        return containsPokemon && worldHasPokemon;
+        return true;
     }
 
     public void pokemonStillValidFirstTime() {
-        if(level.isClientSide) return;
+        if(level.isClientSide || tickCount % 50 != 0) return;
         ServerLevel serverLevel = (ServerLevel) level;
         Set<UUID> toRemove = new HashSet<>();
         for(UUID uuid1 : currentOutbreakWaveEntities){
@@ -255,7 +257,7 @@ public class OutbreakPortalEntity {
     }
 
     protected void completeOutBreak(boolean rewards) {
-        if (rewards) {
+        if (rewards && CobblemonOutbreaksConfig.SPAWN_REWARDS) {
             double completionXp = this.getOutbreakPortal().getExperience();
             while (completionXp > 0) {
                 int i = 20;
@@ -307,8 +309,12 @@ public class OutbreakPortalEntity {
         this.tickCount = tickCount;
     }
     public static OutbreakPortalEntity serialize(Level level, CompoundTag tag) {
-        ResourceLocation resourceLocation1 = prefix(tag.getString("gateLoc"));;
-        OutbreakPortal outbreakPortal = OutbreaksJsonDataManager.getPortalFromRl(prefix(tag.getString("gateLoc")), null);
+        ResourceLocation resourceLocation1 = null;
+        if(tag.contains("gateLoc")) {
+            resourceLocation1 = prefix(tag.getString("gateLoc"));
+        }
+
+        OutbreakPortal outbreakPortal = OutbreaksJsonDataManager.getPortalFromRl(resourceLocation1);
         UUID ownerUUID = null;
         UUID outbreakUUID = null;
         Set<UUID> currentOutbreakEntities = new HashSet<>();
@@ -329,7 +335,7 @@ public class OutbreakPortalEntity {
 
         if(outbreakPortal == null){
             MutableComponent message = Component.translatable("cobblemonoutbreaks.gate_not_able_to_load").withStyle(ChatFormatting.RED);
-            if(ownerUUID != null) {
+            if(ownerUUID != null && level != null) {
                 if (level.getPlayerByUUID(ownerUUID) != null)
                     level.getPlayerByUUID(ownerUUID).sendSystemMessage(message);
             }
@@ -351,8 +357,9 @@ public class OutbreakPortalEntity {
 
     public CompoundTag deserialize() {
         CompoundTag tag = new CompoundTag();
-        tag.putString("gateLoc", resourceLocation.toString().replace("cobblemonoutbreaks:", ""));
-
+        if(resourceLocation != null) {
+            tag.putString("gateLoc", resourceLocation.toString().replace("cobblemonoutbreaks:", ""));
+        }
         if (this.ownerUUID != null) {
             tag.putUUID("Owner", this.ownerUUID);
         }
@@ -427,6 +434,14 @@ public class OutbreakPortalEntity {
 
     public void setBlockPosition(BlockPos blockPosition) {
         this.blockPosition = blockPosition;
+    }
+
+    public BlockPos getBlockPosition() {
+        return blockPosition;
+    }
+
+    public void setCheckLevel(boolean checkLevel) {
+        this.checkLevel = checkLevel;
     }
 
     public void setBlockPosition(Vec3 blockPosition) {

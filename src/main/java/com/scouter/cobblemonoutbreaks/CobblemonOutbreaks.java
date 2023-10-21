@@ -19,11 +19,13 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,10 +179,14 @@ public class CobblemonOutbreaks implements ModInitializer {
             outbreakManager.setLevel(serverLevel);
             Map<UUID, OutbreakPortalEntity> outbreaks = outbreakManager.getOutbreakPortalEntityMap();
             for(Map.Entry<UUID, OutbreakPortalEntity> entry : outbreaks.entrySet()){
+                BlockPos pos = entry.getValue().getBlockPosition();
+                ChunkPos chunkPos = new ChunkPos(pos);
                 OutbreakPortalEntity outbreakPortal = entry.getValue();
-                if(outbreakPortal.getLevel() == null) outbreakPortal.setLevel(serverLevel);
-                if(outbreakPortal.getOutbreakManager() == null) outbreakPortal.setOutbreakManager(PokemonOutbreakManager.get(serverLevel));
-                outbreakPortal.tick();
+                if(serverLevel.getChunkSource().hasChunk(chunkPos.x, chunkPos.z)) {
+                    if (outbreakPortal.getLevel() == null) outbreakPortal.setLevel(serverLevel);
+                    if (outbreakPortal.getOutbreakManager() == null) outbreakPortal.setOutbreakManager(PokemonOutbreakManager.get(serverLevel));
+                    outbreakPortal.tick();
+                }
             }
         });
     }

@@ -11,7 +11,7 @@ public class CobblemonOutbreaksConfig {
     public static float OUTBREAK_PORTAL_POKEMON_SPAWN_VOLUME;
     public static int OUTBREAK_SPAWN_TIMER;
     public static int OUTBREAK_SPAWN_COUNT;
-
+    public static boolean SPAWN_REWARDS;
     public static int OUTBREAKS_MAP_FLUSH_TIMER;
     public static int TEMP_OUTBREAKS_MAP_FLUSH_TIMER;
     public static boolean SEND_PORTAL_SPAWN_MESSAGE;
@@ -34,6 +34,8 @@ public class CobblemonOutbreaksConfig {
         configs.addKeyValuePair(new Pair<>("outbreak_portal_spawn_sound", true), "boolean");
         configs.addKeyValuePair(new Pair<>("outbreak_spawn_timer", 36000), "int");
         configs.addKeyValuePair(new Pair<>("outbreak_spawn_count", 3), "int");
+        configs.addKeyValuePair(new Pair<>("outbreak_spawn_rewards", true), "If outbreaks should spawn rewards or not");
+
         configs.addKeyValuePair(new Pair<>("send_outbreak_portal_spawn_message", true), "boolean");
         configs.addKeyValuePair(new Pair<>("spawn_portal_particles", false), "boolean");
         configs.addKeyValuePair(new Pair<>("biome_specific_spawns", false), "boolean");
@@ -50,6 +52,7 @@ public class CobblemonOutbreaksConfig {
         OUTBREAK_PORTAL_SPAWN_SOUND = CONFIG.getOrDefault("outbreak_portal_spawn_sound", true);
         OUTBREAK_SPAWN_TIMER = CONFIG.getOrDefault("outbreak_spawn_timer", 36000);
         OUTBREAK_SPAWN_COUNT = CONFIG.getOrDefault("outbreak_spawn_count", 3);
+        SPAWN_REWARDS = CONFIG.getOrDefault("outbreak_spawn_rewards", true);
         OUTBREAK_PORTAL_SPAWN_VOLUME = CONFIG.getOrDefault("outbreak_portal_spawn_volume", 1);
         OUTBREAK_PORTAL_POKEMON_SPAWN_VOLUME = CONFIG.getOrDefault("outbreak_portal_pokemon_spawn_volume", 0.2F);
         OUTBREAKS_MAP_FLUSH_TIMER = CONFIG.getOrDefault("outbreaks_flush_timer", 432000);

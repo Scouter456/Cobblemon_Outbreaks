@@ -1,5 +1,6 @@
 package com.scouter.cobblemonoutbreaks.data;
 
+import com.scouter.cobblemonoutbreaks.config.CobblemonOutbreaksConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
@@ -39,6 +40,21 @@ public class OutbreakPlayerManager extends SavedData {
         setDirty();
     }
 
+    public void clearTimeLeft(){
+        for(Map.Entry<UUID,Integer> key : timeLeftMap.entrySet() ){
+            timeLeftMap.put(key.getKey(), 0);
+        }
+        setDirty();
+    }
+
+    public void setTimeLeftToNewConfig(){
+        for(Map.Entry<UUID,Integer> key : timeLeftMap.entrySet() ){
+            if(key.getValue() > CobblemonOutbreaksConfig.OUTBREAK_SPAWN_TIMER) {
+                timeLeftMap.put(key.getKey(), CobblemonOutbreaksConfig.OUTBREAK_SPAWN_TIMER);
+            }
+        }
+        setDirty();
+    }
     public OutbreakPlayerManager(){
     }
 
