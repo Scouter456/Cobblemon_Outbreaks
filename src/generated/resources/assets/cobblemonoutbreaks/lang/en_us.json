@@ -1,5 +1,7 @@
 {
   "cobblemonoutbreaks.clearing_outbreaks_map": "Currently clearing all outbreaks.",
+  "cobblemonoutbreaks.clear_player_timers": "Currently setting all timers to zero!",
+  "cobblemonoutbreaks.set_to_config_value": "Currently setting all timers bigger than config value to config value!",
   "cobblemonoutbreaks.clearing_pokemon_outbreaks_map": "Currently clearing the pokemon saved in the outbreaks. Any outbreaks in the world will spawn new pokemon or finish!",
   "cobblemonoutbreaks.gate_failed_spawning": "An outbreak with %s has been removed since no suitable spawning points could be found",
   "cobblemonoutbreaks.gate_finished": "The outbreak with %s has finished!",

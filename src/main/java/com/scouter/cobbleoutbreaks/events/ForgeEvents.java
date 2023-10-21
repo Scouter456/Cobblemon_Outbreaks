@@ -16,6 +16,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TickEvent;
@@ -25,6 +26,7 @@ import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.checkerframework.checker.units.qual.C;
 import org.slf4j.Logger;
 
 import java.util.Map;
@@ -101,8 +103,6 @@ public class ForgeEvents {
             //serverPlayer.level.addFreshEntity(outbreakPortal);
             outbreakPlayerManager.setTimeLeft(serverPlayer.getUUID(), outbreakTimer);
         }
-        // Reset the timer back to the defined value in the config.
-
     }
 
     @SubscribeEvent
@@ -113,10 +113,14 @@ public class ForgeEvents {
         outbreakManager.setLevel(serverLevel);
         Map<UUID, OutbreakPortalEntity> outbreaks = outbreakManager.getOutbreakPortalEntityMap();
         for(Map.Entry<UUID, OutbreakPortalEntity> entry : outbreaks.entrySet()){
+            BlockPos pos = entry.getValue().getBlockPosition();
+            ChunkPos chunkPos = new ChunkPos(pos);
             OutbreakPortalEntity outbreakPortal = entry.getValue();
-            if(outbreakPortal.getLevel() == null) outbreakPortal.setLevel(serverLevel);
-            if(outbreakPortal.getOutbreakManager() == null) outbreakPortal.setOutbreakManager(PokemonOutbreakManager.get(serverLevel));
-            outbreakPortal.tick();
+            if(serverLevel.getChunkSource().hasChunk(chunkPos.x, chunkPos.z)) {
+                if (outbreakPortal.getLevel() == null) outbreakPortal.setLevel(serverLevel);
+                if (outbreakPortal.getOutbreakManager() == null) outbreakPortal.setOutbreakManager(PokemonOutbreakManager.get(serverLevel));
+                outbreakPortal.tick();
+            }
         }
     }
 

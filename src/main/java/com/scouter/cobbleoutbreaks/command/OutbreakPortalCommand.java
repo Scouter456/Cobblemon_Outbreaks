@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.scouter.cobbleoutbreaks.data.OutbreakManager;
+import com.scouter.cobbleoutbreaks.data.OutbreakPlayerManager;
 import com.scouter.cobbleoutbreaks.data.OutbreaksJsonDataManager;
 import com.scouter.cobbleoutbreaks.data.PokemonOutbreakManager;
 import com.scouter.cobbleoutbreaks.entity.OutbreakPortalEntity;
@@ -39,6 +40,15 @@ public class OutbreakPortalCommand {
         builder.then(Commands.literal("clear_outbreaks").executes(c -> {
             return clearOutbreaks(c);
         }));
+
+        builder.then(Commands.literal("clear_player_timer").executes(c -> {
+            return clearTimers(c);
+        }));
+
+        builder.then(Commands.literal("set_time_to_config_value").executes(c -> {
+            return setToConfigValue(c);
+        }));
+
 
         builder.then(Commands.argument("pos", Vec3Argument.vec3()).then(Commands.argument("type", ResourceLocationArgument.id()).suggests(SUGGEST_TYPE).executes(c -> {
             return openOutBreakPortal(c, Vec3Argument.getVec3(c, "pos"), ResourceLocationArgument.getId(c, "type"));
@@ -88,4 +98,31 @@ public class OutbreakPortalCommand {
         }
         return 0;
     }
+
+    public static int clearTimers(CommandContext<CommandSourceStack> c) {
+        try {
+            ServerLevel level = c.getSource().getLevel();
+            level.getServer().getPlayerList().broadcastSystemMessage(Component.translatable("cobblemonoutbreaks.clear_player_timers").withStyle(ChatFormatting.RED).withStyle(ChatFormatting.ITALIC), true);
+            OutbreakPlayerManager outbreakPlayerManager = OutbreakPlayerManager.get(level);
+            outbreakPlayerManager.clearTimeLeft();
+        } catch (Exception ex) {
+            c.getSource().sendFailure(Component.literal("Exception thrown - see log"));
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static int setToConfigValue(CommandContext<CommandSourceStack> c) {
+        try {
+            ServerLevel level = c.getSource().getLevel();
+            level.getServer().getPlayerList().broadcastSystemMessage(Component.translatable("cobblemonoutbreaks.set_to_config_value").withStyle(ChatFormatting.RED).withStyle(ChatFormatting.ITALIC), true);
+            OutbreakPlayerManager outbreakPlayerManager = OutbreakPlayerManager.get(level);
+            outbreakPlayerManager.setTimeLeftToNewConfig();
+        } catch (Exception ex) {
+            c.getSource().sendFailure(Component.literal("Exception thrown - see log"));
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+
 }
