@@ -1,9 +1,0 @@
-{
-  "species": "elgyem",
-  "waves": 3,
-  "spawns_per_wave": 5,
-  "spawn_range": 20,
-  "biome": [
-    "#minecraft:is_end"
-  ]
-}

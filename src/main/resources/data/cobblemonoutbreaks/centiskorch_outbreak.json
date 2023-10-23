@@ -1,0 +1,14 @@
+{
+  "species": "centiskorch",
+  "waves": 5,
+  "spawns_per_wave": 3,
+  "spawn_range": 25,
+  "pokemon_rarity": "rare",
+  "biome": [
+    "minecraft:badlands",
+    "minecraft:eroded_badlands",
+    "minecraft:wooded_badlands",
+    "minecraft:basalt_deltas",
+    "minecraft:nether_wastes"
+  ]
+}

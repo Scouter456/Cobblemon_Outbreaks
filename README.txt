@@ -6,27 +6,32 @@ Thanks to Shadows of Fire for his GatewaysToEternity: https://github.com/Shadows
 ## Json
 #### Example
 {
-"species": "gastly",
-"max_pokemon_level": 100,
-"waves": 3,
-"spawns_per_wave": 5,
-"rewards": [
-"cobblemon:rare_candy",
-"minecraft:diamond"
-],
-"biome": [
-"minecraft:plains"
-],
-"shiny_chance": 1024.0,
-"experience_reward": 0,
-"spawn_range": 25.0,
-"leash_range": 32.0,
-"spawn_algorithm": "open_field",
-"gate_timer": 36000,
-"level_algorithm": "scaled"
-"min_pokemon_level": 1 [Example] (Does nothing needs min_max algorithm)
-"max_pokemon_level": 10 [Example] (Does nothing needs min_max algorithm)
+  "species_data": {
+    "species": "SomeSpecies",
+    "waves": 3,
+    "spawns_per_wave": 10,
+    "shiny_chance": 1024.0,
+    "pokemon_rarity": "common"
+  },
+  "rewards": {
+    "item_rewards": [
+      "minecraft:diamond",
+      "minecraft:gold_ingot"
+    ],
+    "experience_reward": 50
+  },
+  "algorithms": {
+    "spawn_algorithm": "clustered",
+    "level_algorithm": "scaled",
+    "min_pokemon_level": 80,
+    "max_pokemon_level": 90,
+    "spawn_range": 20.0,
+    "leash_range": 30.0
+  },
+  "gate_timer": 36000,
+  "biome": ["biome_tag_1", "biome_tag_2"]
 }
+
 
 "species": [Mandatory] Represents the species of the entity associated with the outbreak portal. It is a string value.
 

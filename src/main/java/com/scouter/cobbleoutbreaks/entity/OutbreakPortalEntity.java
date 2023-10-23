@@ -107,19 +107,19 @@ public class OutbreakPortalEntity {
     public void sendMessageToPlayer(Player player){
         if(CobblemonOutbreaksConfig.SEND_PORTAL_SPAWN_MESSAGE.get()) {
             if(CobblemonOutbreaksConfig.BIOME_SPECIFIC_SPAWNS_DEBUG.get()) {
-                MutableComponent pokemonMessage = Component.literal(this.getOutbreakPortal().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
+                MutableComponent pokemonMessage = Component.literal(this.getOutbreakPortal().getSpeciesData().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
                 MutableComponent biomeMessage = Component.literal(level.getBiome(this.blockPosition).unwrapKey().get().location().toString().split(":")[1]).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
                 MutableComponent outBreakMessage = Component.translatable("cobblemonoutbreaks.portal_biome_specific_spawn_debug", biomeMessage,this.blockPosition,pokemonMessage).withStyle(ChatFormatting.GREEN);
                 player.sendSystemMessage(outBreakMessage);
             } else if(!CobblemonOutbreaksConfig.BIOME_SPECIFIC_SPAWNS_DEBUG.get()){
-                MutableComponent pokemonMessage =  Component.literal(this.getOutbreakPortal().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
+                MutableComponent pokemonMessage =  Component.literal(this.getOutbreakPortal().getSpeciesData().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
                 MutableComponent blockPos =  Component.literal(String.valueOf(this.blockPosition)).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
                 MutableComponent outBreakMessage = Component.translatable("cobblemonoutbreaks.portal_spawn_near_blockpos", blockPos, pokemonMessage).withStyle(ChatFormatting.DARK_AQUA);
 
                 player.sendSystemMessage(outBreakMessage);
             } else {
                 MutableComponent outBreakMessage = Component.translatable("cobblemonoutbreaks.portal_spawn_near").withStyle(ChatFormatting.DARK_AQUA);
-                MutableComponent pokemonMessage =  Component.literal(this.getOutbreakPortal().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
+                MutableComponent pokemonMessage =  Component.literal(this.getOutbreakPortal().getSpeciesData().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
                 player.sendSystemMessage(outBreakMessage.append(pokemonMessage));
             }
 
@@ -140,23 +140,23 @@ public class OutbreakPortalEntity {
         }
         if (!level.isClientSide) {
             boolean containsPokemon = pokemonStillValid();
-            if (getWave() >= this.getOutbreakPortal().getWaves() && !containsPokemon) {
+            if (getWave() >= this.getOutbreakPortal().getSpeciesData().getWaves() && !containsPokemon) {
                 if(!getHasSpawnedOne()){
                     if(this.ownerUUID != null && CobblemonOutbreaksConfig.SEND_PORTAL_SPAWN_MESSAGE.get()) {
-                        MutableComponent argsComponent = Component.literal(this.getOutbreakPortal().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
+                        MutableComponent argsComponent = Component.literal(this.getOutbreakPortal().getSpeciesData().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
                         MutableComponent message = Component.translatable("cobblemonoutbreaks.gate_failed_spawning", argsComponent).withStyle(ChatFormatting.DARK_RED);
                         if(level.getPlayerByUUID(this.ownerUUID) !=null && level != null) level.getPlayerByUUID(this.ownerUUID).sendSystemMessage(message);
                     }
                 } else {
                     if(this.ownerUUID != null && CobblemonOutbreaksConfig.SEND_PORTAL_SPAWN_MESSAGE.get()) {
-                        MutableComponent argsComponent = Component.literal(this.getOutbreakPortal().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
+                        MutableComponent argsComponent = Component.literal(this.getOutbreakPortal().getSpeciesData().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
                         MutableComponent message = Component.translatable("cobblemonoutbreaks.gate_finished", argsComponent).withStyle(ChatFormatting.GREEN);
                         if(level.getPlayerByUUID(this.ownerUUID) !=null && level != null) level.getPlayerByUUID(this.ownerUUID).sendSystemMessage(message);
                     }
                 }
                 completeOutBreak(true);
             }
-            if (this.tickCount % 100 == 0 && getWave() < this.getOutbreakPortal().getWaves() && !containsPokemon) {
+            if (this.tickCount % 100 == 0 && getWave() < this.getOutbreakPortal().getSpeciesData().getWaves() && !containsPokemon) {
                 spawnWave();
                 setWave(getWave() + 1);
                 OutbreakManager outbreakManager1 = OutbreakManager.get(level);
@@ -166,7 +166,7 @@ public class OutbreakPortalEntity {
 
             if (getTicksActive() >= this.getOutbreakPortal().getMaxGateTime() && getHasSpawnedOne()) {
                 if(this.ownerUUID != null && CobblemonOutbreaksConfig.SEND_PORTAL_SPAWN_MESSAGE.get()) {
-                    MutableComponent argsComponent = Component.literal(this.getOutbreakPortal().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
+                    MutableComponent argsComponent = Component.literal(this.getOutbreakPortal().getSpeciesData().getSpecies()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC);
                     MutableComponent message = Component.translatable("cobblemonoutbreaks.gate_time_finished", argsComponent).withStyle(ChatFormatting.RED);
                     if(level.getPlayerByUUID(this.ownerUUID) !=null && level != null) level.getPlayerByUUID(this.ownerUUID).sendSystemMessage(message);
                 }
@@ -248,11 +248,11 @@ public class OutbreakPortalEntity {
 
     public void spawnWave() {
         Vec3 pos = new Vec3(this.blockPosition.getX(), this.blockPosition.getY(), this.blockPosition.getZ());
-        List<Pokemon> spawned = this.getOutbreakPortal().spawnWave((ServerLevel) level, pos, this, this.getOutbreakPortal().getSpecies());
-        for (Pokemon e : spawned) {
-            if(e.getEntity() == null) continue;
-            this.currentOutbreakWaveEntities.add(e.getEntity().getUUID());
-            outbreakManager.addPokemonWOwner(e.getEntity().getUUID(), this.getOutbreakUUID());
+        List<PokemonEntity> spawned = this.getOutbreakPortal().spawnWave((ServerLevel) level, pos, this, this.getOutbreakPortal().getSpeciesData().getSpecies());
+        for (PokemonEntity e : spawned) {
+            if(e.getUUID() == null) continue;
+            this.currentOutbreakWaveEntities.add(e.getUUID());
+            outbreakManager.addPokemonWOwner(e.getUUID(), this.getOutbreakUUID());
 
         }
 
@@ -263,7 +263,7 @@ public class OutbreakPortalEntity {
 
     protected void completeOutBreak(boolean rewards) {
         if (rewards && CobblemonOutbreaksConfig.SPAWN_REWARDS.get()) {
-            double completionXp = this.getOutbreakPortal().getExperience();
+            double completionXp = this.getOutbreakPortal().getOutbreakRewards().getExperience();
             while (completionXp > 0) {
                 int i = 20;
                 completionXp -= i;
@@ -491,6 +491,6 @@ public class OutbreakPortalEntity {
     }
 
     public static void entityNotSimilar(Pokemon pokemon, OutbreakPortalEntity outbreakPortal) {
-        LOGGER.error("Species trying to spawn is {}, species specified is {}. Something might be wrong with the json. Try checking {}", pokemon.getSpecies(), outbreakPortal.getOutbreakPortal().getSpecies(), outbreakPortal.resourceLocation);
+        LOGGER.error("Species trying to spawn is {}, species specified is {}. Something might be wrong with the json. Try checking {}", pokemon.getSpecies(), outbreakPortal.getOutbreakPortal().getSpeciesData().getSpecies(), outbreakPortal.resourceLocation);
     }
 }

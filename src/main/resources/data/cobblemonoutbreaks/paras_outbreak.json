@@ -1,0 +1,17 @@
+{
+  "species": "paras",
+  "waves": 6,
+  "spawns_per_wave": 3,
+  "spawn_range": 25,
+  "pokemon_rarity": "common",
+  "rewards": [
+    "cobblemon:red_apricorn",
+    "cobblemon:red_apricorn"
+  ],
+  "biome": [
+    "minecraft:lush_caves",
+    "minecraft:mangrove_swamp",
+    "minecraft:swamp",
+    "minecraft:mushroom_fields"
+  ]
+}

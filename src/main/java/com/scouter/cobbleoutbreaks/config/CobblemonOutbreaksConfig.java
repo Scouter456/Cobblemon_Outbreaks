@@ -28,6 +28,11 @@ public class CobblemonOutbreaksConfig {
     public static ForgeConfigSpec.ConfigValue<Boolean> NOT_SPECIFIC_SPAWN_MESSAGE;
     public static ForgeConfigSpec.ConfigValue<Integer> MIN_SPAWN_RADIUS;
     public static ForgeConfigSpec.ConfigValue<Integer> MAX_SPAWN_RADIUS;
+    public static ForgeConfigSpec.ConfigValue<Integer> COMMON_RARITY;
+    public static ForgeConfigSpec.ConfigValue<Integer> UNCOMMON_RARITY;
+    public static ForgeConfigSpec.ConfigValue<Integer> RARE_RARITY;
+    public static ForgeConfigSpec.ConfigValue<Integer> EPIC_RARITY;
+    public static ForgeConfigSpec.ConfigValue<Integer> LEGENDARY_RARITY;
 
     private static void setupConfig(ForgeConfigSpec.Builder builder) {
         builder.comment(CobblemonOutbreaks.MODID + " Config");
@@ -49,5 +54,12 @@ public class CobblemonOutbreaksConfig {
 
         MIN_SPAWN_RADIUS = builder.comment("Minumum spawn radius the portal can spawn around the player, minumum is 16, maximum is 48").define("min_spawn_radius", 32);
         MAX_SPAWN_RADIUS = builder.comment("Maximum spawn radius the portal can spawn around the player, minumum is 49 maximum is 112").define("max_spaw_radius", 64);
+
+        COMMON_RARITY  = builder.comment("Rarity for common outbreakss").define("common_outbreak_rarity", 40);
+        UNCOMMON_RARITY  = builder.comment("Rarity for uncommon outbreakss").define("uncommon_outbreak_rarity", 30);
+        RARE_RARITY  = builder.comment("Rarity for rare outbreakss").define("rare_outbreak_rarity", 20);
+        EPIC_RARITY  = builder.comment("Rarity for epic outbreakss").define("epic_outbreak_rarity", 8);
+        LEGENDARY_RARITY  = builder.comment("Rarity for legendary outbreakss").define("legendary_outbreak_rarity", 2);
+
     }
 }
