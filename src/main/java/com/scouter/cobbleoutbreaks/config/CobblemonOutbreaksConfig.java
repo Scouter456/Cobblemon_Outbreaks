@@ -53,7 +53,7 @@ public class CobblemonOutbreaksConfig {
         TEMP_OUTBREAKS_MAP_FLUSH_TIMER = builder.comment("Time it takes for the map with temporary outbreaks to flush through, every hour").define("temp_outbreaks_flush_timer", 72000);
 
         MIN_SPAWN_RADIUS = builder.comment("Minumum spawn radius the portal can spawn around the player, minumum is 16, maximum is 48").define("min_spawn_radius", 32);
-        MAX_SPAWN_RADIUS = builder.comment("Maximum spawn radius the portal can spawn around the player, minumum is 49 maximum is 112").define("max_spaw_radius", 64);
+        MAX_SPAWN_RADIUS = builder.comment("Maximum spawn radius the portal can spawn around the player, minumum is 49 maximum is 112").define("max_spawn_radius", 64);
 
         COMMON_RARITY  = builder.comment("Rarity for common outbreaks").define("common_outbreak_rarity", 40);
         UNCOMMON_RARITY  = builder.comment("Rarity for uncommon outbreaks").define("uncommon_outbreak_rarity", 30);
