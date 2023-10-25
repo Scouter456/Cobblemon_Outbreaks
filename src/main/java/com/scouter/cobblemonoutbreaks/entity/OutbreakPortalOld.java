@@ -193,7 +193,7 @@ public class OutbreakPortalOld {
     public OutbreakPortal getOutBreakPortalNew() {
         OutbreakSpecies outbreakSpecies = new OutbreakSpecies(species, waves, spawnsPerWave, shinyChance, stringRarity);
         OutbreakRewards outbreakRewards = new OutbreakRewards(rewards, experience);
-        OutbreakAlgorithms outbreakAlgorithms = new OutbreakAlgorithms(spawnAlgo, spawnLevelAlgo, maxPokemonLevel, minPokemonLevel, spawnRange, leashRange);
+        OutbreakAlgorithms outbreakAlgorithms = new OutbreakAlgorithms(spawnAlgo, spawnLevelAlgo,minPokemonLevel, maxPokemonLevel, spawnRange, leashRange);
         OutbreakPortal outbreakPortal =  new OutbreakPortal(outbreakSpecies, outbreakRewards,outbreakAlgorithms, gateTimer, -63, 255, biomeTags);
         outbreakPortal.setOld(true);
         return outbreakPortal;

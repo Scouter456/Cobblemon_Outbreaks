@@ -30,7 +30,7 @@ public class OutbreakAlgorithms {
     protected double leashRange;
 
 
-    public OutbreakAlgorithms(SpawnAlgorithms.SpawnAlgorithm spawnAlgorithms, SpawnLevelAlgorithms.SpawnLevelAlgorithm spawnLevelAlgorithms, int maxPokemonLevel, int minPokemonLevel, double spawnRange, double leashRange){
+    public OutbreakAlgorithms(SpawnAlgorithms.SpawnAlgorithm spawnAlgorithms, SpawnLevelAlgorithms.SpawnLevelAlgorithm spawnLevelAlgorithms, int minPokemonLevel, int maxPokemonLevel, double spawnRange, double leashRange){
         this.spawnLevelAlgorithms = spawnLevelAlgorithms;
         this.spawnAlgorithms = spawnAlgorithms;
         this.minPokemonLevel = minPokemonLevel;
@@ -64,7 +64,7 @@ public class OutbreakAlgorithms {
     }
 
     public static OutbreakAlgorithms getDefaultAlgoritms(){
-        return new OutbreakAlgorithms(SpawnAlgorithms.NAMED_ALGORITHMS.get(prefix("clustered")), SpawnLevelAlgorithms.NAMED_ALGORITHMS.get(prefix("scaled")),100,100, 15,32);
+        return new OutbreakAlgorithms(SpawnAlgorithms.NAMED_ALGORITHMS.get(prefix("clustered")), SpawnLevelAlgorithms.NAMED_ALGORITHMS.get(prefix("scaled")),10,100, 15,32);
     }
 
 }
