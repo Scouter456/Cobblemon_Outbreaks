@@ -239,7 +239,7 @@ public class OutbreakPortal {
             if(!spawnEvent.isCanceled()) {
                 level.addFreshEntity(pokemonEntity);
                 if (CobblemonOutbreaksConfig.OUTBREAK_PORTAL_SPAWN_SOUND.get()) {
-                    float volume = CobblemonOutbreaksConfig.OUTBREAK_PORTAL_POKEMON_SPAWN_VOLUME.get();
+                    float volume = (float) CobblemonOutbreaksConfig.OUTBREAK_PORTAL_POKEMON_SPAWN_VOLUME.get().doubleValue();
                     level.playSound(null, spawnPos.x(), spawnPos.y(), spawnPos.z(), SoundEvents.PORTAL_TRAVEL, SoundSource.HOSTILE, volume, 1);
                 }
 

@@ -140,7 +140,7 @@ public class OutbreakPortalEntity {
 
     public void outbreakSpawnSound(){
         if(CobblemonOutbreaksConfig.OUTBREAK_PORTAL_SPAWN_SOUND.get()) {
-            float volume = CobblemonOutbreaksConfig.OUTBREAK_PORTAL_SPAWN_VOLUME.get();
+            float volume = (float)CobblemonOutbreaksConfig.OUTBREAK_PORTAL_SPAWN_VOLUME.get().doubleValue();
             level.playSound(null, this.blockPosition, SoundEvents.PORTAL_TRIGGER, SoundSource.AMBIENT, volume, 1);
         }
     }
