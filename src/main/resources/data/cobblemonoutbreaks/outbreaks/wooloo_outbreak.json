@@ -1,0 +1,19 @@
+{
+  "algorithms": {
+    "spawn_range": 20.0
+  },
+  "biome": [
+    "minecraft:meadow",
+    "minecraft:frozen_peaks",
+    "minecraft:jagged_peaks",
+    "minecraft:stony_peaks",
+    "minecraft:snowy_slopes",
+    "minecraft:plains"
+  ],
+  "species_data": {
+    "spawns_per_wave": 5,
+    "species": "wooloo",
+    "waves": 3
+  },
+  "rewards": {}
+}

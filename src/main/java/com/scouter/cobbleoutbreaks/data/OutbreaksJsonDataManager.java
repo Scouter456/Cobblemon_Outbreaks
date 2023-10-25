@@ -34,7 +34,7 @@ public class OutbreaksJsonDataManager extends SimpleJsonResourceReloadListener {
     private static final OutbreakPortal PORTAL = new OutbreakPortal(OutbreakSpecies.getDefaultSpecies(),
             OutbreakRewards.getDefaultRewards(),
             OutbreakAlgorithms.getDefaultAlgoritms(),
-            36000, Collections.emptyList());
+            36000, -63, 255, Collections.emptyList());
     protected static Map<ResourceLocation, OutbreakPortal> data = new HashMap<>();
     protected static Map<ResourceKey<Biome>, Map<PokemonRarity, List<Map<ResourceLocation, OutbreakPortal>>>> biomeData = new HashMap<>();
     protected static List<ResourceLocation> resourceLocationList = new ArrayList<>();
@@ -210,6 +210,7 @@ public class OutbreaksJsonDataManager extends SimpleJsonResourceReloadListener {
         biomeData.clear();
         resourceLocationMap.clear();
         resourceLocationList.clear();
+        listWithRarity.clear();
         for (Map.Entry<ResourceLocation, JsonElement> entry : jsons.entrySet()) {
             ResourceLocation key = entry.getKey();
             JsonElement element = entry.getValue();

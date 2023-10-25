@@ -66,7 +66,7 @@ public class CobblemonOutbreaks {
 
     public static void spawns(){
         CobblemonEvents.POKEMON_ENTITY_SPAWN.subscribe(Priority.HIGH, event -> {
-            LOGGER.info("event Pk" + event.getEntity().getPokemon().getSpecies());
+           // LOGGER.info("event Pk" + event.getEntity().getPokemon().getSpecies());
             return Unit.INSTANCE;
         });
     }
@@ -84,7 +84,7 @@ public class CobblemonOutbreaks {
         CobblemonEvents.POKEMON_CAPTURED.subscribe(Priority.HIGH, event -> {
             if (!(event.getPlayer().level() instanceof ServerLevel serverLevel)) return Unit.INSTANCE;
             PokemonOutbreakManager outbreakManager = PokemonOutbreakManager.get(serverLevel);
-            UUID pokemonUUID = event.getPokemon().getEntity().getUUID();
+            UUID pokemonUUID = event.getPokemon().getUuid();
             if (!outbreakManager.containsUUID(pokemonUUID)) return Unit.INSTANCE;
             UUID ownerUUID = outbreakManager.getOwnerUUID(pokemonUUID);
 
@@ -111,7 +111,7 @@ public class CobblemonOutbreaks {
             if (event.getPokemon().getOwnerUUID() != null || event.getPokemon() == null || serverlevel == null) return Unit.INSTANCE;
             ServerLevel serverLevel = serverlevel;
             PokemonOutbreakManager outbreakManager = PokemonOutbreakManager.get(serverLevel);
-            UUID pokemonUUID = event.getPokemon().getEntity().getUUID();
+            UUID pokemonUUID = event.getPokemon().getUuid();
             if (!outbreakManager.containsUUID(pokemonUUID)) return Unit.INSTANCE;
             UUID ownerUUID = outbreakManager.getOwnerUUID(pokemonUUID);
             OutbreakManager outbreakManager1 = OutbreakManager.get(serverLevel);

@@ -1,0 +1,32 @@
+{
+  "algorithms": {
+    "spawn_range": 25.0
+  },
+  "biome": [
+    "minecraft:nether_wastes",
+    "minecraft:soul_sand_valley",
+    "minecraft:crimson_forest",
+    "minecraft:warped_forest",
+    "minecraft:basalt_deltas",
+    "minecraft:plains",
+    "minecraft:forest",
+    "minecraft:flower_forest",
+    "minecraft:birch_forest",
+    "minecraft:old_growth_birch_forest",
+    "minecraft:dark_forest",
+    "minecraft:grove",
+    "minecraft:swamp",
+    "#cobblemon:is_abyss"
+  ],
+  "species_data": {
+    "spawns_per_wave": 5,
+    "pokemon_rarity": "uncommon",
+    "species": "haunter",
+    "waves": 3
+  },
+  "rewards": {
+    "item_rewards": [
+      "cobblemon:link_cable"
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "algorithms": {
+    "spawn_range": 20.0
+  },
+  "biome": [
+    "minecraft:plains",
+    "minecraft:forest",
+    "minecraft:meadow",
+    "minecraft:frozen_peaks",
+    "minecraft:jagged_peaks",
+    "minecraft:stony_peaks",
+    "minecraft:snowy_slopes"
+  ],
+  "species_data": {
+    "spawns_per_wave": 4,
+    "species": "magnemite",
+    "waves": 4
+  },
+  "rewards": {}
+}

@@ -1,0 +1,15 @@
+{
+  "algorithms": {
+    "spawn_range": 25.0
+  },
+  "biome": [
+    "minecraft:desert"
+  ],
+  "species_data": {
+    "spawns_per_wave": 5,
+    "shiny_chance": 512.0,
+    "species": "fennekin",
+    "waves": 3
+  },
+  "rewards": {}
+}

@@ -1,0 +1,23 @@
+{
+  "algorithms": {
+    "spawn_range": 25.0
+  },
+  "biome": [
+    "minecraft:jungle",
+    "minecraft:bamboo_jungle",
+    "minecraft:sparse_jungle"
+  ],
+  "species_data": {
+    "spawns_per_wave": 3,
+    "species": "bounsweet",
+    "waves": 5
+  },
+  "rewards": {
+    "item_rewards": [
+      "minecraft:poppy",
+      "cobblemon:pink_apricorn",
+      "cobblemon:pink_apricorn",
+      "cobblemon:pink_apricorn"
+    ]
+  }
+}

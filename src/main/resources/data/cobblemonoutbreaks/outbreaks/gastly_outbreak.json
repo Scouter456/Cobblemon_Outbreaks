@@ -1,0 +1,22 @@
+{
+  "algorithms": {
+    "spawn_range": 25.0
+  },
+  "biome": [
+    "minecraft:nether_wastes",
+    "minecraft:soul_sand_valley",
+    "minecraft:crimson_forest",
+    "minecraft:warped_forest",
+    "minecraft:basalt_deltas",
+    "minecraft:plains",
+    "minecraft:forest",
+    "minecraft:swamp"
+  ],
+  "species_data": {
+    "spawns_per_wave": 5,
+    "shiny_chance": 512.0,
+    "species": "gastly",
+    "waves": 3
+  },
+  "rewards": {}
+}

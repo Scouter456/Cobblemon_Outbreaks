@@ -18,6 +18,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -26,7 +27,6 @@ import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import org.checkerframework.checker.units.qual.C;
 import org.slf4j.Logger;
 
 import java.util.Map;
@@ -97,7 +97,10 @@ public class ForgeEvents {
                     continue;
                 }
             }
+
             OutbreakPortalEntity outbreakPortal = new OutbreakPortalEntity(serverPlayer.level(), serverPlayer, pos);
+            CobblemonOutbreaksEvent.PortalSpawn portalSpawn = new CobblemonOutbreaksEvent.PortalSpawn((ServerLevel) serverPlayer.level(), outbreakPortal);
+            MinecraftForge.EVENT_BUS.post(portalSpawn);
         }
 
             //serverPlayer.level.addFreshEntity(outbreakPortal);
@@ -158,7 +161,7 @@ public class ForgeEvents {
         if(changeModZ){
             randomZ = -randomZ;
         }
-        int y = (int)player.getY();
+        int y = (int)player.getY() + 10;
         while ((player.level().getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).isAir() && player.level().getBlockState(new BlockPos(playerPosX + randomX, y - 1, playerPosZ + randomZ)).isAir()) ||
                 (!player.level().getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).isAir() && !player.level().getBlockState(new BlockPos(playerPosX + randomX, y - 1, playerPosZ + randomZ)).isAir()) ||
                 (!player.level().getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).isAir() && player.level().getBlockState(new BlockPos(playerPosX + randomX, y - 1, playerPosZ + randomZ)).isAir())) {

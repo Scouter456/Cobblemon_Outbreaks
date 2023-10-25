@@ -1,0 +1,18 @@
+{
+  "algorithms": {
+    "spawn_range": 25.0
+  },
+  "biome": [
+    "minecraft:river",
+    "minecraft:swamp",
+    "minecraft:frozen_river",
+    "minecraft:beach",
+    "minecraft:deep_ocean"
+  ],
+  "species_data": {
+    "spawns_per_wave": 5,
+    "species": "bidoof",
+    "waves": 3
+  },
+  "rewards": {}
+}

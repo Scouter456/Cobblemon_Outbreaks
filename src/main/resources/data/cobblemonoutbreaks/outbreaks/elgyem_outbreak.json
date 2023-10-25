@@ -1,0 +1,15 @@
+{
+  "algorithms": {
+    "spawn_range": 20.0
+  },
+  "biome": [
+    "#minecraft:is_end"
+  ],
+  "species_data": {
+    "spawns_per_wave": 5,
+    "pokemon_rarity": "uncommon",
+    "species": "elgyem",
+    "waves": 3
+  },
+  "rewards": {}
+}

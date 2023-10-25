@@ -1,0 +1,22 @@
+{
+  "algorithms": {
+    "spawn_range": 20.0
+  },
+  "biome": [
+    "minecraft:plains",
+    "minecraft:sunflower_plains",
+    "minecraft:flower_forest"
+  ],
+  "species_data": {
+    "spawns_per_wave": 4,
+    "pokemon_rarity": "rare",
+    "species": "pumpkaboo",
+    "waves": 4
+  },
+  "rewards": {
+    "item_rewards": [
+      "cobblemon:rare_candy",
+      "cobblemon:rare_candy"
+    ]
+  }
+}

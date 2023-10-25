@@ -1,0 +1,15 @@
+{
+  "algorithms": {
+    "spawn_range": 20.0
+  },
+  "biome": [
+    "minecraft:warm_ocean"
+  ],
+  "species_data": {
+    "spawns_per_wave": 4,
+    "shiny_chance": 512.0,
+    "species": "luvdisc",
+    "waves": 4
+  },
+  "rewards": {}
+}

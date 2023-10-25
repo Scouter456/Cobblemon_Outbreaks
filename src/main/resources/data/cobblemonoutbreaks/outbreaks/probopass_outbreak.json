@@ -1,0 +1,24 @@
+{
+  "algorithms": {
+    "spawn_range": 25.0
+  },
+  "biome": [
+    "minecraft:plains",
+    "minecraft:savanna",
+    "minecraft:badlands",
+    "minecraft:eroded_badlands",
+    "minecraft:wooded_badlands",
+    "minecraft:meadow",
+    "minecraft:frozen_peaks",
+    "minecraft:jagged_peaks",
+    "minecraft:stony_peaks",
+    "minecraft:snowy_slopes"
+  ],
+  "species_data": {
+    "spawns_per_wave": 3,
+    "pokemon_rarity": "rare",
+    "species": "probopass",
+    "waves": 5
+  },
+  "rewards": {}
+}

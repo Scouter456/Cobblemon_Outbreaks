@@ -1,12 +1,7 @@
 package com.scouter.cobbleoutbreaks.entity;
 
-import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.api.entity.Despawner;
-import com.cobblemon.mod.common.api.events.CobblemonEvents;
-import com.cobblemon.mod.common.api.events.entity.SpawnEvent;
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties;
-import com.cobblemon.mod.common.api.spawning.CobblemonWorldSpawnerManager;
-import com.cobblemon.mod.common.api.spawning.context.SpawningContext;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.mojang.datafixers.util.Either;
@@ -17,48 +12,26 @@ import com.scouter.cobbleoutbreaks.config.CobblemonOutbreaksConfig;
 import com.scouter.cobbleoutbreaks.data.OutbreakAlgorithms;
 import com.scouter.cobbleoutbreaks.data.OutbreakRewards;
 import com.scouter.cobbleoutbreaks.data.OutbreakSpecies;
-import com.scouter.cobbleoutbreaks.data.PokemonRarity;
-import kotlin.Unit;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
+import com.scouter.cobbleoutbreaks.events.CobblemonOutbreaksEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
-
-import static com.scouter.cobbleoutbreaks.CobblemonOutbreaks.prefix;
 
 public class OutbreakPortal {
 
     private static final Logger LOGGER = LogUtils.getLogger();
-
-    public static Codec<OutbreakPortal> EITHER = Codec.either(OutbreakPortal.CODEC, OutbreakPortalOld.CODEC).xmap(either -> {
-                if (either.left().isPresent()) {
-                    OutbreakPortal outbreakPortalOld = either.left().get();
-                    return outbreakPortalOld;
-                }
-
-
-                OutbreakPortalOld outbreakPortalOld = either.right().get();
-                OutbreakPortal outbreakPortal = outbreakPortalOld.getOutBreakPortalNew();
-                return outbreakPortal;
-            },
-            outbreakPortal -> Either.left(outbreakPortal)
-    );
-
 
     public static Codec<OutbreakPortal> CODEC = RecordCodecBuilder.create(inst -> inst
             .group(
@@ -66,10 +39,29 @@ public class OutbreakPortal {
                     OutbreakRewards.CODEC.optionalFieldOf("rewards", OutbreakRewards.getDefaultRewards()).forGetter(r -> r.outbreakRewards),
                     OutbreakAlgorithms.CODEC.optionalFieldOf("algorithms", OutbreakAlgorithms.getDefaultAlgoritms()).forGetter(a -> a.outbreakAlgorithms),
                     Codec.INT.optionalFieldOf("gate_timer", 36000).forGetter(t -> t.gateTimer),
+                    Codec.intRange(-63, 255).optionalFieldOf("outbreak_min_y", -63).forGetter(r -> r.minOutbreakY),
+                    Codec.intRange(-63, 255).optionalFieldOf("outbreak_max_y", 255).forGetter(r -> r.maxOutbreakY),
                     ExtraCodecs.TAG_OR_ELEMENT_ID.listOf().optionalFieldOf("biome", Collections.emptyList()).forGetter(t -> t.biomeTags)
             )
             .apply(inst, OutbreakPortal::new)
     );
+
+    public static Codec<OutbreakPortal> EITHER = Codec.either(OutbreakPortalOld.CODEC, OutbreakPortal.CODEC).xmap(either -> {
+                if (either.left().isPresent()) {
+                    OutbreakPortalOld outbreakPortalOld = either.left().get();
+                    OutbreakPortal outbreakPortal = outbreakPortalOld.getOutBreakPortalNew();
+                    return outbreakPortal;
+                }
+
+
+
+                OutbreakPortal outbreakPortal = either.right().get();
+                return outbreakPortal;
+            },
+            outbreakPortal -> Either.right(outbreakPortal)
+    );
+
+
 
 
     private OutbreakSpecies speciesData;
@@ -81,8 +73,9 @@ public class OutbreakPortal {
 
     protected final List<ResourceLocation> spawnBiome;
     private ResourceLocation jsonLocation;
-
-
+    private int minOutbreakY;
+    private int maxOutbreakY;
+    private boolean isOld;
     /**
      * Creates an OutbreakPortal instance.
      *
@@ -93,11 +86,13 @@ public class OutbreakPortal {
      */
     public OutbreakPortal(OutbreakSpecies speciesData, OutbreakRewards rewards,
                           OutbreakAlgorithms outbreakAlgorithms,
-                          int gateTimer, List<ExtraCodecs.TagOrElementLocation> spawnBiome) {
+                          int gateTimer, int minOutbreakY, int maxOutbreakY, List<ExtraCodecs.TagOrElementLocation> spawnBiome) {
         this.speciesData = speciesData;
         this.outbreakRewards = rewards;
         this.outbreakAlgorithms = outbreakAlgorithms;
         this.gateTimer = gateTimer;
+        this.minOutbreakY = minOutbreakY;
+        this.maxOutbreakY = maxOutbreakY;
         List<ResourceLocation> spawnBiomeTags = new ArrayList<>();
         List<ResourceLocation> spawnBiomes = new ArrayList<>();
         for (ExtraCodecs.TagOrElementLocation tagOrElementLocation : spawnBiome) {
@@ -155,6 +150,21 @@ public class OutbreakPortal {
         return outbreakRewards;
     }
 
+    public int getMinOutbreakY() {
+        return minOutbreakY;
+    }
+
+    public int getMaxOutbreakY() {
+        return maxOutbreakY;
+    }
+
+    public void setOld(boolean old) {
+        isOld = old;
+    }
+
+    public boolean isOld() {
+        return isOld;
+    }
     /**
      * Spawns a wave of Pokémon.
      *
@@ -223,16 +233,18 @@ public class OutbreakPortal {
                 //LOGGER.info("Spawning for Pokémon {} failed, due to spawnPos {} or Pokémon {}", pokemon1.getSpecies(), spawnPos, pokemon1.getSpecies());
                 continue;
             }
-            //CobblemonEvents.ENTITY_SPAWN.post(new SpawnEvent[]{new SpawnEvent<PokemonEntity>(pokemonEntity, null)}, (m) -> Unit.INSTANCE);
-            level.addFreshEntity(pokemonEntity);
-            //pokemon1.sendOut(level, spawnPos, (m) -> null);
 
-            if (CobblemonOutbreaksConfig.OUTBREAK_PORTAL_SPAWN_SOUND.get()) {
-                float volume = CobblemonOutbreaksConfig.OUTBREAK_PORTAL_POKEMON_SPAWN_VOLUME.get();
-                level.playSound(null, spawnPos.x(), spawnPos.y(), spawnPos.z(), SoundEvents.PORTAL_TRAVEL, SoundSource.HOSTILE, volume, 1);
+            CobblemonOutbreaksEvent.PokemonSpawn spawnEvent = new CobblemonOutbreaksEvent.PokemonSpawn(level, pokemonEntity, spawnPos);
+            MinecraftForge.EVENT_BUS.post(spawnEvent);
+            if(!spawnEvent.isCanceled()) {
+                level.addFreshEntity(pokemonEntity);
+                if (CobblemonOutbreaksConfig.OUTBREAK_PORTAL_SPAWN_SOUND.get()) {
+                    float volume = CobblemonOutbreaksConfig.OUTBREAK_PORTAL_POKEMON_SPAWN_VOLUME.get();
+                    level.playSound(null, spawnPos.x(), spawnPos.y(), spawnPos.z(), SoundEvents.PORTAL_TRAVEL, SoundSource.HOSTILE, volume, 1);
+                }
+
+                spawned.add(pokemonEntity);
             }
-
-            spawned.add(pokemonEntity);
         }
 
         return spawned;
@@ -241,7 +253,11 @@ public class OutbreakPortal {
     public List<ItemStack> spawnRewards(ServerLevel level, OutbreakPortalEntity gate) {
         List<ItemStack> stacks = new ArrayList<>();
         gate.getOutbreakPortal().getOutbreakRewards().getRewards().forEach(r -> stacks.add(new ItemStack(r)));
-        stacks.forEach(s -> level.addFreshEntity(new ItemEntity(level, gate.getX(), gate.getY(), gate.getZ(), s)));
+        CobblemonOutbreaksEvent.SpawnRewards spawnRewards = new CobblemonOutbreaksEvent.SpawnRewards(level , stacks);
+        MinecraftForge.EVENT_BUS.post(spawnRewards);
+        if(!spawnRewards.isCanceled()) {
+            stacks.forEach(s -> level.addFreshEntity(new ItemEntity(level, gate.getX(), gate.getY(), gate.getZ(), s)));
+        }
         return stacks;
     }
 }

@@ -1,0 +1,17 @@
+{
+  "algorithms": {
+    "spawn_range": 25.0
+  },
+  "biome": [
+    "minecraft:flower_forest",
+    "minecraft:sunflower_plains",
+    "minecraft:plains"
+  ],
+  "species_data": {
+    "spawns_per_wave": 3,
+    "pokemon_rarity": "epic",
+    "species": "meganium",
+    "waves": 5
+  },
+  "rewards": {}
+}

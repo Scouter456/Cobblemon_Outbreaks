@@ -1,0 +1,18 @@
+{
+  "algorithms": {
+    "spawn_range": 30.0
+  },
+  "biome": [
+    "minecraft:basalt_deltas",
+    "minecraft:crimson_forest",
+    "minecraft:nether_wastes",
+    "#cobblemon:is_hills",
+    "#cobblemon:is_volcanic"
+  ],
+  "species_data": {
+    "spawns_per_wave": 4,
+    "species": "magmar",
+    "waves": 5
+  },
+  "rewards": {}
+}

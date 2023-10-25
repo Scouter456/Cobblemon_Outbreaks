@@ -1,0 +1,28 @@
+{
+  "algorithms": {
+    "spawn_range": 20.0
+  },
+  "biome": [
+    "minecraft:grove",
+    "minecraft:snowy_taiga",
+    "minecraft:ice_spikes",
+    "minecraft:snowy_plains",
+    "minecraft:forest",
+    "minecraft:flower_forest",
+    "minecraft:birch_forest",
+    "minecraft:old_growth_birch_forest",
+    "minecraft:dark_forest",
+    "minecraft:grove",
+    "minecraft:savanna",
+    "minecraft:savanna_plateau",
+    "minecraft:windswept_savanna",
+    "minecraft:plains",
+    "minecraft:sunflower_plains"
+  ],
+  "species_data": {
+    "spawns_per_wave": 5,
+    "species": "growlithe",
+    "waves": 3
+  },
+  "rewards": {}
+}

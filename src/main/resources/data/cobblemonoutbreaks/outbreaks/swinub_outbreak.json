@@ -1,0 +1,14 @@
+{
+  "algorithms": {
+    "spawn_range": 20.0
+  },
+  "biome": [
+    "#cobblemon:is_tundra"
+  ],
+  "species_data": {
+    "spawns_per_wave": 4,
+    "species": "swinub",
+    "waves": 3
+  },
+  "rewards": {}
+}

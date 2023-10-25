@@ -1,0 +1,26 @@
+{
+  "algorithms": {
+    "spawn_range": 25.0
+  },
+  "biome": [
+    "minecraft:plains",
+    "minecraft:sunflower_plains",
+    "minecraft:savanna",
+    "minecraft:savanna_plateau",
+    "minecraft:windswept_savanna"
+  ],
+  "species_data": {
+    "spawns_per_wave": 3,
+    "species": "diglett",
+    "waves": 5
+  },
+  "rewards": {
+    "item_rewards": [
+      "cobblemon:dive_ball",
+      "cobblemon:dive_ball",
+      "cobblemon:rare_candy",
+      "cobblemon:rare_candy"
+    ],
+    "experience_reward": 100
+  }
+}

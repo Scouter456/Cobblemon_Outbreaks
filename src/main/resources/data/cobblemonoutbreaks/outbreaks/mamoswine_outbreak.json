@@ -1,0 +1,21 @@
+{
+  "algorithms": {
+    "spawn_range": 30.0
+  },
+  "biome": [
+    "#cobblemon:is_tundra"
+  ],
+  "species_data": {
+    "spawns_per_wave": 2,
+    "pokemon_rarity": "epic",
+    "species": "mamoswine",
+    "waves": 3
+  },
+  "rewards": {
+    "item_rewards": [
+      "cobblemon:sport_ball",
+      "cobblemon:rare_candy"
+    ],
+    "experience_reward": 300
+  }
+}

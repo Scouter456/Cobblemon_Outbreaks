@@ -7,6 +7,7 @@ import com.scouter.cobbleoutbreaks.config.CobblemonOutbreaksConfig;
 import com.scouter.cobbleoutbreaks.data.OutbreakManager;
 import com.scouter.cobbleoutbreaks.data.OutbreaksJsonDataManager;
 import com.scouter.cobbleoutbreaks.data.PokemonOutbreakManager;
+import com.scouter.cobbleoutbreaks.events.CobblemonOutbreaksEvent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -23,6 +24,7 @@ import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
@@ -72,14 +74,24 @@ public class OutbreakPortalEntity {
         this.outbreakUUID = UUID.randomUUID();
         this.blockPosition = position;
         populatePortal(level);
-        sendMessageToPlayer(placer);
-        outbreakSpawnSound();
         this.ownerUUID = placer.getUUID();
         OutbreakManager outbreakManager1 = OutbreakManager.get(level);
         outbreakManager1.addPortal(outbreakUUID, this);
+        checkValidY(placer);
+        sendMessageToPlayer(placer);
+        outbreakSpawnSound();
     }
 
-
+    public void checkValidY(Player player){
+        int maxY = getOutbreakPortal().getMaxOutbreakY();
+        int minY = getOutbreakPortal().getMinOutbreakY();
+        int y = getBlockPosition().getY();
+        if( y < minY || y > maxY){
+            MutableComponent outBreakMessage = Component.translatable("cobblemonoutbreaks.unlucky_spawn").withStyle(ChatFormatting.DARK_AQUA);
+            player.sendSystemMessage(outBreakMessage);
+            completeOutBreak(false);
+        }
+    }
     public void populatePortal(Level level){
         if (!level.isClientSide) {
 
@@ -158,6 +170,10 @@ public class OutbreakPortalEntity {
             }
             if (this.tickCount % 100 == 0 && getWave() < this.getOutbreakPortal().getSpeciesData().getWaves() && !containsPokemon) {
                 spawnWave();
+                if(!level.isClientSide) {
+                    CobblemonOutbreaksEvent.WaveEnd waveEnd = new CobblemonOutbreaksEvent.WaveEnd((ServerLevel) level, this);
+                    MinecraftForge.EVENT_BUS.post(waveEnd);
+                }
                 setWave(getWave() + 1);
                 OutbreakManager outbreakManager1 = OutbreakManager.get(level);
                 outbreakManager1.setDirty();
@@ -251,8 +267,8 @@ public class OutbreakPortalEntity {
         List<PokemonEntity> spawned = this.getOutbreakPortal().spawnWave((ServerLevel) level, pos, this, this.getOutbreakPortal().getSpeciesData().getSpecies());
         for (PokemonEntity e : spawned) {
             if(e.getUUID() == null) continue;
-            this.currentOutbreakWaveEntities.add(e.getUUID());
-            outbreakManager.addPokemonWOwner(e.getUUID(), this.getOutbreakUUID());
+            this.currentOutbreakWaveEntities.add(e.getPokemon().getUuid());
+            outbreakManager.addPokemonWOwner(e.getPokemon().getUuid(), this.getOutbreakUUID());
 
         }
 
@@ -278,11 +294,9 @@ public class OutbreakPortalEntity {
         if(!level.isClientSide){
             OutbreakManager outbreakManager1 = OutbreakManager.get(level);
             outbreakManager1.removePortal(outbreakUUID);
+            CobblemonOutbreaksEvent.PortalClose portalClose = new CobblemonOutbreaksEvent.PortalClose((ServerLevel) level, this);
+            MinecraftForge.EVENT_BUS.post(portalClose);
         }
-
-
-
-        //this.remove(RemovalReason.DISCARDED);
     }
 
     public OutbreakPortal getOutbreakPortal() {

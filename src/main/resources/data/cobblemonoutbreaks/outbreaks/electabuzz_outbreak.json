@@ -1,0 +1,15 @@
+{
+  "algorithms": {
+    "spawn_range": 30.0
+  },
+  "biome": [
+    "minecraft:plains"
+  ],
+  "species_data": {
+    "spawns_per_wave": 4,
+    "pokemon_rarity": "rare",
+    "species": "electabuzz",
+    "waves": 3
+  },
+  "rewards": {}
+}
