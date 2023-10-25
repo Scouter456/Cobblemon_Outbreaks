@@ -46,7 +46,7 @@ public class SpawnAlgorithms {
      */
     private static final Logger LOGGER = LogUtils.getLogger();
     public static Vec3 openField(ServerLevel level, Vec3 pos, OutbreakPortalEntity outbreakPortalEntity, PokemonEntity pokemon){
-        double spawnRange = outbreakPortalEntity.getOutbreakPortal().getSpawnRange();
+        double spawnRange = outbreakPortalEntity.getOutbreakPortal().getOutbreakAlgorithms().getSpawnRange();
         int tries = 0;
         double x = pos.x() + (-1 + 2 * level.random.nextDouble()) * spawnRange;
         double y = pos.y() + level.random.nextInt(3) - 1;
@@ -66,7 +66,7 @@ public class SpawnAlgorithms {
             y++;
         }
 
-        if (outbreakPortalEntity.distanceToSqr(x, y, z) > outbreakPortalEntity.getOutbreakPortal().getLeashRangeSq()) return null;
+        if (outbreakPortalEntity.distanceToSqr(x, y, z) > outbreakPortalEntity.getOutbreakPortal().getOutbreakAlgorithms().getLeashRangeSq()) return null;
 
         if (level.noCollision(getAABB(x,y,z, pokemon))) return new Vec3(x, y, z);
 
@@ -82,7 +82,7 @@ public class SpawnAlgorithms {
     @Nullable
     public static Vec3 inwardSpiral(ServerLevel level, Vec3 pos, OutbreakPortalEntity outbreakPortal, PokemonEntity pokemon) {
 
-        double spawnRange = outbreakPortal.getOutbreakPortal().getSpawnRange();
+        double spawnRange = outbreakPortal.getOutbreakPortal().getOutbreakAlgorithms().getSpawnRange();
 
         int tries = 0;
         double x = pos.x() + (-1 + 2 * level.random.nextDouble()) * spawnRange;
@@ -103,7 +103,7 @@ public class SpawnAlgorithms {
             y++;
         }
 
-        if (outbreakPortal.distanceToSqr(x, y, z) > outbreakPortal.getOutbreakPortal().getLeashRangeSq()) return null;
+        if (outbreakPortal.distanceToSqr(x, y, z) > outbreakPortal.getOutbreakPortal().getOutbreakAlgorithms().getLeashRangeSq()) return null;
 
         if (level.noCollision(pokemon.getBoundingBox().inflate(x,y,z))) return new Vec3(x, y, z);
 
@@ -117,7 +117,7 @@ public class SpawnAlgorithms {
      * **/
     @Nullable
     public static Vec3 checkerBoard(ServerLevel level, Vec3 pos, OutbreakPortalEntity outbreakPortal, PokemonEntity pokemon) {
-        double spawnRange = outbreakPortal.getOutbreakPortal().getSpawnRange();
+        double spawnRange = outbreakPortal.getOutbreakPortal().getOutbreakAlgorithms().getSpawnRange();
 
         int tries = 0;
         double x = pos.x() - spawnRange / 2;
@@ -172,7 +172,7 @@ public class SpawnAlgorithms {
             y++;
         }
         blockPos = BlockPos.containing(blockPos.getX(), y, blockPos.getZ());
-        if (outbreakPortal.distanceToSqr(x, y, z) > outbreakPortal.getOutbreakPortal().getLeashRangeSq()) return null;
+        if (outbreakPortal.distanceToSqr(x, y, z) > outbreakPortal.getOutbreakPortal().getOutbreakAlgorithms().getLeashRangeSq()) return null;
         if (level.noCollision(getAABB(x, y, z, pokemon))) return Vec3.atCenterOf(blockPos);
 
         return null;
@@ -185,7 +185,7 @@ public class SpawnAlgorithms {
      */
 
     public static Vec3 clustered(ServerLevel level, Vec3 pos, OutbreakPortalEntity outbreakPortalEntity, PokemonEntity pokemon){
-        double spawnRange = outbreakPortalEntity.getOutbreakPortal().getSpawnRange();
+        double spawnRange = outbreakPortalEntity.getOutbreakPortal().getOutbreakAlgorithms().getSpawnRange();
         int tries = 0;
         double x = pos.x() + (-1 + 2 * level.random.nextDouble()) * spawnRange;
         double y = pos.y() + level.random.nextInt(3) - 1;
@@ -204,7 +204,7 @@ public class SpawnAlgorithms {
             y++;
         }
 
-        if (outbreakPortalEntity.distanceToSqr(x, y, z) > outbreakPortalEntity.getOutbreakPortal().getLeashRangeSq()) return null;
+        if (outbreakPortalEntity.distanceToSqr(x, y, z) > outbreakPortalEntity.getOutbreakPortal().getOutbreakAlgorithms().getLeashRangeSq()) return null;
         if (level.noCollision(getAABB(x,y,z, pokemon))) return new Vec3(x, y, z);
 
         return null;

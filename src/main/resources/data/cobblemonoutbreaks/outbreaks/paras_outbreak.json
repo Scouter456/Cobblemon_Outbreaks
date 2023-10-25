@@ -1,16 +1,22 @@
 {
-  "species": "paras",
-  "waves": 6,
-  "spawns_per_wave": 3,
-  "spawn_range": 25,
-  "rewards": [
-    "cobblemon:red_apricorn",
-    "cobblemon:red_apricorn"
-  ],
+  "algorithms": {
+    "spawn_range": 25.0
+  },
   "biome": [
     "minecraft:lush_caves",
     "minecraft:mangrove_swamp",
     "minecraft:swamp",
     "minecraft:mushroom_fields"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 3,
+    "species": "paras",
+    "waves": 6
+  },
+  "rewards": {
+    "item_rewards": [
+      "cobblemon:red_apricorn",
+      "cobblemon:red_apricorn"
+    ]
+  }
 }

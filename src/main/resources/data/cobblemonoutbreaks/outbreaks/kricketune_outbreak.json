@@ -1,10 +1,16 @@
 {
-  "species": "kricketune",
-  "waves": 5,
-  "spawns_per_wave": 3,
-  "spawn_range": 25,
+  "algorithms": {
+    "spawn_range": 25.0
+  },
   "biome": [
     "minecraft:mangrove_swamp",
     "minecraft:swamp"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 3,
+    "pokemon_rarity": "uncommon",
+    "species": "kricketune",
+    "waves": 5
+  },
+  "rewards": {}
 }

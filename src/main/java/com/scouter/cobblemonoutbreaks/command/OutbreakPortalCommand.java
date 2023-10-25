@@ -1,15 +1,22 @@
 package com.scouter.cobblemonoutbreaks.command;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import com.scouter.cobblemonoutbreaks.CobblemonOutbreaks;
 import com.scouter.cobblemonoutbreaks.data.OutbreakManager;
 import com.scouter.cobblemonoutbreaks.data.OutbreakPlayerManager;
 import com.scouter.cobblemonoutbreaks.data.OutbreaksJsonDataManager;
 import com.scouter.cobblemonoutbreaks.data.PokemonOutbreakManager;
+import com.scouter.cobblemonoutbreaks.entity.OutbreakPortal;
 import com.scouter.cobblemonoutbreaks.entity.OutbreakPortalEntity;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -23,9 +30,17 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
 
 public class OutbreakPortalCommand {
-
+    public static final Logger LOGGER = LoggerFactory.getLogger("cobblemonoutbreaks");
     public static final SuggestionProvider<CommandSourceStack> SUGGEST_TYPE = (ctx, builder) -> {
         return SharedSuggestionProvider.suggest(OutbreaksJsonDataManager.getData().keySet().stream().map(ResourceLocation::toString), builder);
     };
@@ -48,6 +63,10 @@ public class OutbreakPortalCommand {
 
         builder.then(Commands.literal("set_time_to_config_value").executes(c -> {
             return setToConfigValue(c);
+        }));
+
+        builder.then(Commands.literal("update_files").executes(c -> {
+            return updateFiles(c);
         }));
 
         builder.then(Commands.argument("pos", Vec3Argument.vec3()).then(Commands.argument("type", ResourceLocationArgument.id()).suggests(SUGGEST_TYPE).executes(c -> {
@@ -124,6 +143,44 @@ public class OutbreakPortalCommand {
             c.getSource().sendFailure(Component.literal("Exception thrown - see log"));
             ex.printStackTrace();
         }
+        return 0;
+    }
+
+    public static int updateFiles(CommandContext<CommandSourceStack> c) {
+        int updatedFile = 0;
+        Entity nullableSummoner = c.getSource().getEntity();
+        Path PATH = FabricLoader.getInstance().getGameDir().resolve("cobblemon_outbreaks_updated_json_files");
+        try {
+            Map<ResourceLocation, OutbreakPortal> portals = OutbreaksJsonDataManager.getData();
+
+            try {
+                Files.createDirectories(PATH); // Create the directory if it doesn't exist
+            } catch (IOException e) {
+                LOGGER.error("Error creating directory: ", e);
+            }
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            for(Map.Entry<ResourceLocation, OutbreakPortal> portalEntry : portals.entrySet()) {
+                if(portalEntry.getValue().isOld()){
+                DataResult<JsonElement> jsonElement = OutbreakPortal.CODEC.encodeStart(JsonOps.INSTANCE, portalEntry.getValue());
+
+                try (FileWriter writer = new FileWriter(PATH + "/" + portalEntry.getKey().getPath() + ".json")) {
+                    gson.toJson(jsonElement.get().left().get(), writer);
+                    updatedFile += 1;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                }
+            }
+        } catch (Exception ex) {
+            c.getSource().sendFailure(Component.literal("Exception thrown - see log"));
+            ex.printStackTrace();
+        }
+        if(nullableSummoner instanceof Player player){
+            player.sendSystemMessage(Component.literal("A new directory has been created at: " + PATH).withStyle(ChatFormatting.GREEN));
+            player.sendSystemMessage(Component.literal("Updated " + updatedFile + " files").withStyle(ChatFormatting.GREEN));
+
+        }
+
         return 0;
     }
 }

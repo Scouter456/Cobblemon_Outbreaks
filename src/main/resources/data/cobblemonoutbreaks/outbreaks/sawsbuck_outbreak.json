@@ -1,8 +1,7 @@
 {
-  "species": "sawsbuck",
-  "waves": 4,
-  "spawns_per_wave": 4,
-  "spawn_range": 20,
+  "algorithms": {
+    "spawn_range": 20.0
+  },
   "biome": [
     "minecraft:flower_forest",
     "minecraft:forest",
@@ -13,5 +12,11 @@
     "minecraft:grove",
     "minecraft:plains",
     "minecraft:taiga"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 4,
+    "species": "sawsbuck",
+    "waves": 4
+  },
+  "rewards": {}
 }

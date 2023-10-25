@@ -1,14 +1,21 @@
 {
-  "species": "electivire",
-  "waves": 3,
-  "spawns_per_wave": 4,
-  "spawn_range": 30,
+  "algorithms": {
+    "spawn_range": 30.0
+  },
   "biome": [
     "minecraft:plains"
   ],
-  "experience_reward": 250,
-  "rewards": [
-    "cobblemon:ultra_ball",
-    "cobblemon:rare_candy"
-  ]
+  "species_data": {
+    "spawns_per_wave": 4,
+    "pokemon_rarity": "epic",
+    "species": "electivire",
+    "waves": 3
+  },
+  "rewards": {
+    "item_rewards": [
+      "cobblemon:ultra_ball",
+      "cobblemon:rare_candy"
+    ],
+    "experience_reward": 250
+  }
 }

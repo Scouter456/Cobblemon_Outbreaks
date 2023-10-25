@@ -21,6 +21,11 @@ public class CobblemonOutbreaksConfig {
 
     public static int  MIN_SPAWN_RADIUS;
     public static int MAX_SPAWN_RADIUS;
+    public static int COMMON_RARITY;
+    public static int UNCOMMON_RARITY;
+    public static int RARE_RARITY;
+    public static int EPIC_RARITY;
+    public static int LEGENDARY_RARITY;
     public static void registerConfigs() {
         configs = new CobblemonOutbreaksConfigProvider();
         createConfigs();
@@ -45,7 +50,12 @@ public class CobblemonOutbreaksConfig {
         configs.addKeyValuePair(new Pair<>("outbreak_portal_spawn_volume", 1F), "Volume of the spawning sound of the outbreak portal");
         configs.addKeyValuePair(new Pair<>("outbreak_portal_pokemon_spawn_volume", 0.2F), "Volume of the pokemon spawning sound of the outbreak portal");
         configs.addKeyValuePair(new Pair<>("outbreaks_flush_timer", 432000), "Time it takes for the map with outbreaks to flush through, every 6 hours");
-        configs.addKeyValuePair(new Pair<>("temp_outbreaks_flush_timer", 72000), "Time it takes for the map with temporary outbreaks to flush through, every hour");
+        configs.addKeyValuePair(new Pair<>("common_outbreak_rarity", 40), "Rarity for common outbreaks");
+        configs.addKeyValuePair(new Pair<>("uncommon_outbreak_rarity", 30), "Rarity for uncommon outbreaks");
+        configs.addKeyValuePair(new Pair<>("rare_outbreak_rarity", 20), "Rarity for rare outbreaks");
+        configs.addKeyValuePair(new Pair<>("epic_outbreak_rarity", 8), "Rarity for epic outbreaks");
+        configs.addKeyValuePair(new Pair<>("legendary_outbreak_rarity", 2), "Rarity for legendary outbreaks");
+
     }
 
     private static void assignConfigs() {
@@ -65,6 +75,12 @@ public class CobblemonOutbreaksConfig {
         BIOME_SPECIFIC_SPAWNS_DEBUG = CONFIG.getOrDefault("biome_specific_spawns_debug", false);
         MIN_SPAWN_RADIUS = CONFIG.getOrDefault("min_spawn_radius", 32);
         MAX_SPAWN_RADIUS = CONFIG.getOrDefault("max_spawn_radius", 64);
+
+        COMMON_RARITY = CONFIG.getOrDefault("common_outbreak_rarity", 40);
+        UNCOMMON_RARITY = CONFIG.getOrDefault("uncommon_outbreak_rarity", 30);
+        RARE_RARITY = CONFIG.getOrDefault("rare_outbreak_rarity", 20);
+        EPIC_RARITY = CONFIG.getOrDefault("epic_outbreak_rarity", 8);
+        LEGENDARY_RARITY = CONFIG.getOrDefault("legendary_outbreak_rarity", 2);
 
         System.out.println("All " + configs.getConfigsList().size() + " have been set properly");
     }

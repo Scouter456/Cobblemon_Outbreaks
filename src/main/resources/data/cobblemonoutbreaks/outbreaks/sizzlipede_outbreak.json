@@ -1,17 +1,23 @@
 {
-  "species": "sizzlipede",
-  "waves": 5,
-  "spawns_per_wave": 3,
-  "spawn_range": 25,
-  "rewards": [
-    "cobblemon:fire_stone",
-    "cobblemon:fire_stone"
-  ],
+  "algorithms": {
+    "spawn_range": 25.0
+  },
   "biome": [
     "minecraft:badlands",
     "minecraft:eroded_badlands",
     "minecraft:wooded_badlands",
     "minecraft:basalt_deltas",
     "minecraft:nether_wastes"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 3,
+    "species": "sizzlipede",
+    "waves": 5
+  },
+  "rewards": {
+    "item_rewards": [
+      "cobblemon:fire_stone",
+      "cobblemon:fire_stone"
+    ]
+  }
 }

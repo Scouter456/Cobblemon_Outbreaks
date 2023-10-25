@@ -1,13 +1,19 @@
 {
-  "species": "carvanha",
-  "waves": 3,
-  "spawns_per_wave": 5,
-  "spawn_range": 20,
+  "algorithms": {
+    "spawn_range": 20.0
+  },
   "biome": [
     "minecraft:frozen_ocean",
     "minecraft:ocean",
     "minecraft:cold_ocean",
     "minecraft:lukewarm_ocean",
     "minecraft:warm_ocean"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 5,
+    "pokemon_rarity": "uncommon",
+    "species": "carvanha",
+    "waves": 3
+  },
+  "rewards": {}
 }

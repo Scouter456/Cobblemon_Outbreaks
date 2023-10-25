@@ -1,13 +1,19 @@
 {
-  "species": "inteleon",
-  "waves": 5,
-  "spawns_per_wave": 3,
-  "spawn_range": 30,
+  "algorithms": {
+    "spawn_range": 30.0
+  },
   "biome": [
     "minecraft:river",
     "minecraft:swamp",
     "minecraft:frozen_river",
     "minecraft:beach",
     "minecraft:deep_ocean"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 3,
+    "pokemon_rarity": "uncommon",
+    "species": "inteleon",
+    "waves": 5
+  },
+  "rewards": {}
 }

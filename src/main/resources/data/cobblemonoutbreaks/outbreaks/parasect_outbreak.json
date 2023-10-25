@@ -1,18 +1,24 @@
 {
-  "species": "parasect",
-  "waves": 3,
-  "spawns_per_wave": 5,
-  "spawn_range": 25,
-  "experience_reward": 100,
-  "rewards": [
-    "cobblemon:red_apricorn_seed",
-    "cobblemon:red_apricorn_seed"
-  ],
+  "algorithms": {
+    "spawn_range": 25.0
+  },
   "biome": [
     "minecraft:lush_caves",
-    "minecraft:lush_swamp",
     "minecraft:mangrove_swamp",
     "minecraft:swamp",
     "minecraft:mushroom_fields"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 5,
+    "pokemon_rarity": "uncommon",
+    "species": "parasect",
+    "waves": 3
+  },
+  "rewards": {
+    "item_rewards": [
+      "cobblemon:red_apricorn_seed",
+      "cobblemon:red_apricorn_seed"
+    ],
+    "experience_reward": 100
+  }
 }

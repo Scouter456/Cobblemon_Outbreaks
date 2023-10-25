@@ -9,6 +9,7 @@ import com.scouter.cobblemonoutbreaks.data.OutbreakManager;
 import com.scouter.cobblemonoutbreaks.data.OutbreaksJsonDataManager;
 import com.scouter.cobblemonoutbreaks.data.PokemonOutbreakManager;
 import com.scouter.cobblemonoutbreaks.entity.OutbreakPortalEntity;
+import com.scouter.cobblemonoutbreaks.event.CobblemonOutbreaksEvent;
 import com.scouter.cobblemonoutbreaks.setup.ClientSetup;
 import com.scouter.cobblemonoutbreaks.setup.Registration;
 import kotlin.Unit;
@@ -27,6 +28,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

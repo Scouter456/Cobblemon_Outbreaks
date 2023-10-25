@@ -1,9 +1,7 @@
 {
-  "species": "torkoal",
-  "waves": 3,
-  "spawns_per_wave": 5,
-  "spawn_range": 25,
-  "shiny_chance": 512,
+  "algorithms": {
+    "spawn_range": 25.0
+  },
   "biome": [
     "minecraft:basalt_deltas",
     "minecraft:meadow",
@@ -13,5 +11,13 @@
     "minecraft:snowy_slopes",
     "minecraft:plains",
     "minecraft:desert"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 5,
+    "shiny_chance": 512.0,
+    "pokemon_rarity": "rare",
+    "species": "torkoal",
+    "waves": 3
+  },
+  "rewards": {}
 }

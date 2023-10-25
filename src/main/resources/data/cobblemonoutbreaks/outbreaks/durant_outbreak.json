@@ -1,11 +1,17 @@
 {
-  "species": "durant",
-  "waves": 5,
-  "spawns_per_wave": 3,
-  "spawn_range": 25,
+  "algorithms": {
+    "spawn_range": 25.0
+  },
   "biome": [
     "minecraft:badlands",
     "minecraft:eroded_badlands",
     "minecraft:wooded_badlands"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 3,
+    "pokemon_rarity": "uncommon",
+    "species": "durant",
+    "waves": 5
+  },
+  "rewards": {}
 }

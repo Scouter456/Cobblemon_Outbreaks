@@ -1,8 +1,7 @@
 {
-  "species": "magmortar",
-  "waves": 3,
-  "spawns_per_wave": 2,
-  "spawn_range": 30,
+  "algorithms": {
+    "spawn_range": 30.0
+  },
   "biome": [
     "minecraft:basalt_deltas",
     "minecraft:crimson_forest",
@@ -10,11 +9,19 @@
     "#cobblemon:is_hills",
     "#cobblemon:is_volcanic"
   ],
-  "experience_reward": 500,
-  "rewards": [
-    "cobblemon:ultra_ball",
-    "cobblemon:ultra_ball",
-    "cobblemon:rare_candy",
-    "cobblemon:rare_candy"
-  ]
+  "species_data": {
+    "spawns_per_wave": 2,
+    "pokemon_rarity": "epic",
+    "species": "magmortar",
+    "waves": 3
+  },
+  "rewards": {
+    "item_rewards": [
+      "cobblemon:ultra_ball",
+      "cobblemon:ultra_ball",
+      "cobblemon:rare_candy",
+      "cobblemon:rare_candy"
+    ],
+    "experience_reward": 500
+  }
 }

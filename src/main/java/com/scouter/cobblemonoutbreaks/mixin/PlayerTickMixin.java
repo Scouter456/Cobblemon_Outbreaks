@@ -3,6 +3,7 @@ package com.scouter.cobblemonoutbreaks.mixin;
 import com.scouter.cobblemonoutbreaks.config.CobblemonOutbreaksConfig;
 import com.scouter.cobblemonoutbreaks.data.OutbreakPlayerManager;
 import com.scouter.cobblemonoutbreaks.entity.OutbreakPortalEntity;
+import com.scouter.cobblemonoutbreaks.event.CobblemonOutbreaksEvent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -67,7 +68,7 @@ public class PlayerTickMixin {
                     }
                 }
                 OutbreakPortalEntity outbreakPortal = new OutbreakPortalEntity(level, player, pos);
-                //level.addFreshEntity(outbreakPortal);
+                CobblemonOutbreaksEvent.Events.PORTAL_SPAWN.invoker().onPortalSpawn((ServerLevel) level, outbreakPortal);
             }
             outbreakPlayerManager.setTimeLeft(player.getUUID(), outbreakTimer);
         }
@@ -105,7 +106,7 @@ public class PlayerTickMixin {
         if(changeModZ){
             randomZ = -randomZ;
         }
-        int y = (int)player.getY();
+        int y = (int)player.getY() + 10;
         while ((player.level().getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).isAir() && player.level().getBlockState(new BlockPos(playerPosX + randomX, y - 1, playerPosZ + randomZ)).isAir()) ||
                 (!player.level().getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).isAir() && !player.level().getBlockState(new BlockPos(playerPosX + randomX, y - 1, playerPosZ + randomZ)).isAir()) ||
                 (!player.level().getBlockState(new BlockPos(playerPosX + randomX, y, playerPosZ + randomZ)).isAir() && player.level().getBlockState(new BlockPos(playerPosX + randomX, y - 1, playerPosZ + randomZ)).isAir())) {

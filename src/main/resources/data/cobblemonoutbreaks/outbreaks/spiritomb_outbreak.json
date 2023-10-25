@@ -1,16 +1,23 @@
 {
-  "species": "spiritomb",
-  "waves": 8,
-  "spawns_per_wave": 2,
-  "spawn_range": 25,
-  "experience_reward": 2000,
-  "shiny_chance": 512,
-  "rewards": [
-    "cobblemon:rare_candy",
-    "cobblemon:rare_candy",
-    "cobblemon:rare_candy"
-  ],
+  "algorithms": {
+    "spawn_range": 25.0
+  },
   "biome": [
     "minecraft:deep_dark"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 2,
+    "shiny_chance": 512.0,
+    "pokemon_rarity": "epic",
+    "species": "spiritomb",
+    "waves": 8
+  },
+  "rewards": {
+    "item_rewards": [
+      "cobblemon:rare_candy",
+      "cobblemon:rare_candy",
+      "cobblemon:rare_candy"
+    ],
+    "experience_reward": 2000
+  }
 }

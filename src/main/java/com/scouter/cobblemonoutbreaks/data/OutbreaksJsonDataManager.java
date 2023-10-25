@@ -2,13 +2,11 @@ package com.scouter.cobblemonoutbreaks.data;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
 import com.scouter.cobblemonoutbreaks.entity.OutbreakPortal;
-import com.scouter.cobblemonoutbreaks.entity.SpawnAlgorithms;
-import com.scouter.cobblemonoutbreaks.entity.SpawnLevelAlgorithms;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -16,11 +14,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -38,20 +36,22 @@ public class OutbreaksJsonDataManager extends SimpleJsonResourceReloadListener i
         this.folderName = folderName;
     }
 
-    private final String folderName;
-    public static final Logger LOGGER = LoggerFactory.getLogger("cobblemonoutbreaks");
-    private static final OutbreakPortal PORTAL = new OutbreakPortal("default", 5,5,Collections.emptyList(), 1024, 10, 15D, 32D,
-            SpawnAlgorithms.NAMED_ALGORITHMS.get(prefix("clustered")),
-            SpawnLevelAlgorithms.NAMED_ALGORITHMS.get(prefix("scaled")),
-            36000, 10, 100, Collections.emptyList());
-    public static final Gson STANDARD_GSON = new Gson();
+    private static final Gson STANDARD_GSON = new Gson();
+    private static final Logger LOGGER = LogUtils.getLogger();
+
+    private static final OutbreakPortal PORTAL = new OutbreakPortal(OutbreakSpecies.getDefaultSpecies(),
+            OutbreakRewards.getDefaultRewards(),
+            OutbreakAlgorithms.getDefaultAlgoritms(),
+            36000, -63, 255, Collections.emptyList());
     protected static Map<ResourceLocation, OutbreakPortal> data = new HashMap<>();
-    protected static Map<ResourceKey<Biome>, Map<ResourceLocation, OutbreakPortal>> biomeData = new HashMap<>();
+    protected static Map<ResourceKey<Biome>, Map<PokemonRarity, List<Map<ResourceLocation, OutbreakPortal>>>> biomeData = new HashMap<>();
     protected static List<ResourceLocation> resourceLocationList = new ArrayList<>();
+    protected static Map<PokemonRarity, List<ResourceLocation>> listWithRarity = new HashMap<>();
     protected static Map<ResourceKey<Biome>, List<ResourceLocation>> resourceLocationMap = new HashMap();
+    private final String folderName;
 
 
-    public static Map<ResourceKey<Biome>, Map<ResourceLocation, OutbreakPortal>> getBiomeData() {
+    public static Map<ResourceKey<Biome>, Map<PokemonRarity, List<Map<ResourceLocation, OutbreakPortal>>>> getBiomeData() {
         return biomeData;
     }
 
@@ -65,14 +65,19 @@ public class OutbreaksJsonDataManager extends SimpleJsonResourceReloadListener i
 
     public static Map<ResourceLocation, OutbreakPortal> getRandomPortalFromBiome(Level level, ResourceKey<Biome> biome) {
         Map<ResourceLocation, OutbreakPortal> map = new HashMap<>();
-        ResourceLocation rl = getRandomResourceLocationFromBiome(level, biome);
-        Map<ResourceLocation, OutbreakPortal> outbreakPortalMap = biomeData.getOrDefault(biome, new HashMap<>());
-        OutbreakPortal outbreakPortal = outbreakPortalMap.getOrDefault(rl, null);
 
-        if (outbreakPortal == null) {
-            outbreakPortalMap = getRandomPortal(level);
-            rl = outbreakPortalMap.keySet().stream().toList().get(0);
-            outbreakPortal = outbreakPortalMap.values().stream().toList().get(0);
+        Map<PokemonRarity, List<Map<ResourceLocation, OutbreakPortal>>> outbreakPortalMap = biomeData.getOrDefault(biome, new HashMap<>());
+        RandomSource randomSource = level.random;
+        PokemonRarity rarity = PokemonRarity.getRandomRarity(randomSource);
+        List<Map<ResourceLocation, OutbreakPortal>> rlList = outbreakPortalMap.getOrDefault(rarity, outbreakPortalMap.getOrDefault(PokemonRarity.COMMON, new ArrayList<>()));
+        ResourceLocation rl = getRandomResourceLocationFromList(level, rlList);
+        OutbreakPortal outbreakPortal = data.getOrDefault(rl, null);
+
+        if(outbreakPortal == null){
+
+            Map<ResourceLocation, OutbreakPortal> outbreakPortalMapRand = getRandomPortal(level);
+            rl = outbreakPortalMapRand.keySet().stream().toList().get(0);
+            outbreakPortal = outbreakPortalMapRand.values().stream().toList().get(0);
         }
 
 
@@ -88,6 +93,15 @@ public class OutbreaksJsonDataManager extends SimpleJsonResourceReloadListener i
         return map;
     }
 
+    private static ResourceLocation getRandomResourceLocationFromList(Level level, List<Map<ResourceLocation, OutbreakPortal>> list) {
+        if (list.isEmpty()) {
+            return getRandomResourceLocation(level);
+        }
+
+        Map<ResourceLocation, OutbreakPortal> randomMap = list.get(level.random.nextInt(list.size()));
+        return randomMap.keySet().iterator().next();
+    }
+
     private static ResourceLocation getRandomResourceLocationFromBiome(Level level, ResourceKey<Biome> biome) {
         List<ResourceLocation> resourceLocations = resourceLocationMap.getOrDefault(biome, Collections.emptyList());
         if (resourceLocations.isEmpty()) {
@@ -97,14 +111,16 @@ public class OutbreaksJsonDataManager extends SimpleJsonResourceReloadListener i
     }
 
     private static ResourceLocation getRandomResourceLocation(Level level) {
-        if (!resourceLocationList.isEmpty()) {
-            return resourceLocationList.get(level.random.nextInt(resourceLocationList.size()));
+        if (!listWithRarity.isEmpty()) {
+            List<ResourceLocation> resourceLocations = listWithRarity.getOrDefault(PokemonRarity.COMMON, null);
+            if(resourceLocations == null || resourceLocations.isEmpty()) return null;
+            return resourceLocations.get(level.random.nextInt(resourceLocations.size()));
         }
         return null;
     }
 
     public static void populateMap(ServerLevel level) {
-        Map<ResourceKey<Biome>, Map<ResourceLocation, OutbreakPortal>> newBiomeData = new HashMap<>();
+        Map<ResourceKey<Biome>, Map<PokemonRarity, List<Map<ResourceLocation, OutbreakPortal>>>> newBiomeData = new HashMap<>();
         Map<ResourceKey<Biome>, List<ResourceLocation>> resourceLocationBiomeMap = new HashMap<>();
         for (OutbreakPortal portal : data.values()) {
             List<ResourceLocation> tagsRL = portal.getSpawnBiomeTags();
@@ -115,13 +131,20 @@ public class OutbreaksJsonDataManager extends SimpleJsonResourceReloadListener i
                     Iterable<Holder<Biome>> biomeHolder = reg.getTagOrEmpty(biomeTagKey);
                     for(Holder<Biome> biome : biomeHolder){
                         ResourceKey<Biome> biomeResourceKey = biome.unwrapKey().get();
-                        Map<ResourceLocation, OutbreakPortal> mapToPut = newBiomeData.computeIfAbsent(biomeResourceKey, k -> new HashMap<>());
+                        Map<PokemonRarity, List<Map<ResourceLocation, OutbreakPortal>>> rarityMapMap = newBiomeData.computeIfAbsent(biomeResourceKey, k -> new HashMap<>());
+                        PokemonRarity rarity = portal.getSpeciesData().getRarity();
+                        List<Map<ResourceLocation, OutbreakPortal>> listToPut = rarityMapMap.computeIfAbsent(rarity, k -> new ArrayList<>());
+                        Map<ResourceLocation, OutbreakPortal> mapToPut = new HashMap<>();
                         mapToPut.put(portal.getJsonLocation(), portal);
-                        newBiomeData.put(biomeResourceKey, mapToPut);
+                        listToPut.add(mapToPut);
+                        rarityMapMap.put(rarity, listToPut);
+                        newBiomeData.put(biomeResourceKey, rarityMapMap);
 
                         List<ResourceLocation> resourceLocations = resourceLocationBiomeMap.getOrDefault(biomeResourceKey, new ArrayList<>());
                         resourceLocations.add(portal.getJsonLocation());
                         resourceLocationBiomeMap.put(biomeResourceKey, resourceLocations);
+
+
                     }
 
                     if (!biomeHolder.iterator().hasNext()) {
@@ -147,13 +170,19 @@ public class OutbreaksJsonDataManager extends SimpleJsonResourceReloadListener i
                 resourceLocations.add(portal.getJsonLocation());
                 resourceLocationBiomeMap.put(biomeResourceKey, resourceLocations);
 
-                Map<ResourceLocation, OutbreakPortal> mapToPut = newBiomeData.computeIfAbsent(biomeResourceKey, k -> new HashMap<>());
-                mapToPut.put(portal.getJsonLocation(), portal);
+                Map<PokemonRarity, List<Map<ResourceLocation, OutbreakPortal>>> mapToPut = newBiomeData.computeIfAbsent(biomeResourceKey, k -> new HashMap<>());
+                PokemonRarity rarity = portal.getSpeciesData().getRarity();
+                List<Map<ResourceLocation, OutbreakPortal>> listMap = mapToPut.computeIfAbsent(rarity, k -> new ArrayList<>());
+                Map<ResourceLocation, OutbreakPortal> portalMap = new HashMap<>();
+                portalMap.put(portal.getJsonLocation(), portal);
+                listMap.add(portalMap);
+                mapToPut.put(rarity, listMap);
+
                 newBiomeData.put(biomeResourceKey, mapToPut);
             }
 
-            int minLevel = portal.getMinPokemonLevel();
-            int maxLevel = portal.getMaxPokemonLevel();
+            int minLevel = portal.getOutbreakAlgorithms().getMinPokemonLevel();
+            int maxLevel = portal.getOutbreakAlgorithms().getMaxPokemonLevel();
 
             if(minLevel > maxLevel){
                 LOGGER.error("Portal with {}, has a bigger min_pokemon_level than max_pokemon_level", portal.getJsonLocation());
@@ -165,26 +194,26 @@ public class OutbreaksJsonDataManager extends SimpleJsonResourceReloadListener i
         newBiomeData.clear();
     }
 
-
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> jsons, ResourceManager resourceManager, ProfilerFiller profiler) {
+    protected void apply(Map<ResourceLocation, JsonElement> jsons, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
         LOGGER.info("Beginning loading of data for data loader: {}", this.folderName);
 
         Map<ResourceLocation, OutbreakPortal> newMap = new HashMap<>();
         List<ResourceLocation> newResourceLocationList = new ArrayList<>();
+        Map<PokemonRarity, List<ResourceLocation>> newResourceLocationMap = new HashMap<>();
         Map<ResourceKey<Biome>, List<ResourceLocation>> resourceLocationBiomeMap = new HashMap<>();
         Map<ResourceKey<Biome>, Map<ResourceLocation, OutbreakPortal>> newBiomeData = new HashMap<>();
         data.clear();
         biomeData.clear();
         resourceLocationMap.clear();
         resourceLocationList.clear();
+        listWithRarity.clear();
         for (Map.Entry<ResourceLocation, JsonElement> entry : jsons.entrySet()) {
             ResourceLocation key = entry.getKey();
             JsonElement element = entry.getValue();
 
             // if we fail to parse json, log an error and continue
-            // if we succeeded, add the resulting T to the ma
-            OutbreakPortal.CODEC.decode(JsonOps.INSTANCE, element)
+            OutbreakPortal.EITHER.decode(JsonOps.INSTANCE, element)
                     .get()
                     .ifLeft(result -> {
                         OutbreakPortal portal = result.getFirst();
@@ -207,10 +236,15 @@ public class OutbreaksJsonDataManager extends SimpleJsonResourceReloadListener i
                             resourceLocationBiomeMap.put(biomeResourceKey, resourceLocations);
                         });
                         newResourceLocationList.add(key);
+                        PokemonRarity rarity = portal.getSpeciesData().getRarity();
+                        List<ResourceLocation> resourceLocations = newResourceLocationMap.computeIfAbsent(rarity, k -> new ArrayList<>());
+                        resourceLocations.add(key);
+                        newResourceLocationMap.put(rarity, resourceLocations);
                     })
                     .ifRight(partial -> LOGGER.error("Failed to parse data json for {} due to: {}", key, partial.message()));
 
         }
+        this.listWithRarity = newResourceLocationMap;
         this.resourceLocationList = newResourceLocationList;
         this.data = newMap;
         LOGGER.info("Data loader for {} loaded {} jsons", this.folderName, this.data.size());

@@ -1,11 +1,17 @@
 {
-  "species": "clefairy",
-  "waves": 5,
-  "spawns_per_wave": 3,
-  "spawn_range": 25,
+  "algorithms": {
+    "spawn_range": 25.0
+  },
   "biome": [
     "#cobblemon:is_dripstone",
     "#cobblemon:is_hills",
     "#cobblemon:is_magical"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 3,
+    "pokemon_rarity": "rare",
+    "species": "clefairy",
+    "waves": 5
+  },
+  "rewards": {}
 }

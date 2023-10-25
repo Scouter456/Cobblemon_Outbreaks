@@ -1,16 +1,23 @@
 {
-  "species": "yanmega",
-  "waves": 2,
-  "spawns_per_wave": 2,
-  "spawn_range": 25,
-  "rewards": [
-    "cobblemon:leaf_stone",
-    "cobblemon:hard_stone"
-  ],
+  "algorithms": {
+    "spawn_range": 25.0
+  },
   "biome": [
     "minecraft:river",
     "minecraft:frozen_river",
     "minecraft:mangrove_swamp",
     "minecraft:swamp"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 2,
+    "pokemon_rarity": "rare",
+    "species": "yanmega",
+    "waves": 2
+  },
+  "rewards": {
+    "item_rewards": [
+      "cobblemon:leaf_stone",
+      "cobblemon:hard_stone"
+    ]
+  }
 }

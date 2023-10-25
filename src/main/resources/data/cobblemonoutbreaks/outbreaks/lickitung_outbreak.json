@@ -1,11 +1,16 @@
 {
-  "species": "lickitung",
-  "waves": 5,
-  "spawns_per_wave": 3,
-  "spawn_range": 25,
+  "algorithms": {
+    "spawn_range": 25.0
+  },
   "biome": [
     "minecraft:plains",
     "minecraft:savanna",
     "minecraft:savanna_plateau"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 3,
+    "species": "lickitung",
+    "waves": 5
+  },
+  "rewards": {}
 }

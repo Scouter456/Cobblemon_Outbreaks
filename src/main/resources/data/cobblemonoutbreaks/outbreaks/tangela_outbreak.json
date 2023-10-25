@@ -1,11 +1,16 @@
 {
-  "species": "tangela",
-  "waves": 3,
-  "spawns_per_wave": 5,
-  "spawn_range": 25,
+  "algorithms": {
+    "spawn_range": 25.0
+  },
   "biome": [
     "minecraft:bamboo_jungle",
     "minecraft:jungle",
     "minecraft:sparse_jungle"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 5,
+    "species": "tangela",
+    "waves": 3
+  },
+  "rewards": {}
 }

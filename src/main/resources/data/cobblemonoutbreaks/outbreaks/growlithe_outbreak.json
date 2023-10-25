@@ -1,8 +1,7 @@
 {
-  "species": "growlithe",
-  "waves": 3,
-  "spawns_per_wave": 5,
-  "spawn_range": 20,
+  "algorithms": {
+    "spawn_range": 20.0
+  },
   "biome": [
     "minecraft:grove",
     "minecraft:snowy_taiga",
@@ -19,5 +18,11 @@
     "minecraft:windswept_savanna",
     "minecraft:plains",
     "minecraft:sunflower_plains"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 5,
+    "species": "growlithe",
+    "waves": 3
+  },
+  "rewards": {}
 }

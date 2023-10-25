@@ -1,10 +1,15 @@
 {
-  "species": "wailmer",
-  "waves": 3,
-  "spawns_per_wave": 5,
-  "spawn_range": 20,
+  "algorithms": {
+    "spawn_range": 20.0
+  },
   "biome": [
     "minecraft:deep_lukewarm_ocean",
     "minecraft:lukewarm_ocean"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 5,
+    "species": "wailmer",
+    "waves": 3
+  },
+  "rewards": {}
 }

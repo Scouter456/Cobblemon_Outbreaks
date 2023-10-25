@@ -64,8 +64,8 @@ public class SpawnLevelAlgorithms {
     }
 
     public static int minMax(ServerLevel level, Player player, OutbreakPortalEntity outbreakPortal) {
-        int maxPokemonLevel = outbreakPortal.getOutbreakPortal().getMaxPokemonLevel();
-        int minPokemonLevel = outbreakPortal.getOutbreakPortal().getMinPokemonLevel();
+        int maxPokemonLevel = outbreakPortal.getOutbreakPortal().getOutbreakAlgorithms().getMaxPokemonLevel();
+        int minPokemonLevel = outbreakPortal.getOutbreakPortal().getOutbreakAlgorithms().getMinPokemonLevel();
 
         if(minPokemonLevel > maxPokemonLevel)
         {

@@ -1,9 +1,14 @@
 {
-  "species": "piloswine",
-  "waves": 3,
-  "spawns_per_wave": 5,
-  "spawn_range": 20,
+  "algorithms": {
+    "spawn_range": 20.0
+  },
   "biome": [
     "#cobblemon:is_tundra"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 5,
+    "species": "piloswine",
+    "waves": 3
+  },
+  "rewards": {}
 }

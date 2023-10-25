@@ -1,8 +1,7 @@
 {
-  "species": "steelix",
-  "waves": 6,
-  "spawns_per_wave": 2,
-  "spawn_range": 25,
+  "algorithms": {
+    "spawn_range": 25.0
+  },
   "biome": [
     "minecraft:plains",
     "minecraft:forest",
@@ -11,5 +10,12 @@
     "minecraft:jagged_peaks",
     "minecraft:stony_peaks",
     "minecraft:snowy_slopes"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 2,
+    "pokemon_rarity": "rare",
+    "species": "steelix",
+    "waves": 6
+  },
+  "rewards": {}
 }

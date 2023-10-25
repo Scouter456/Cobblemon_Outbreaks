@@ -1,10 +1,15 @@
 {
-  "species": "rowlet",
-  "waves": 5,
-  "spawns_per_wave": 3,
-  "spawn_range": 25,
+  "algorithms": {
+    "spawn_range": 25.0
+  },
   "biome": [
     "minecraft:taiga",
     "minecraft:snowy_taiga"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 3,
+    "species": "rowlet",
+    "waves": 5
+  },
+  "rewards": {}
 }

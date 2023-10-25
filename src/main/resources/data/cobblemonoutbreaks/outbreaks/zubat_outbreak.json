@@ -1,12 +1,7 @@
 {
-  "species": "zubat",
-  "waves": 3,
-  "spawns_per_wave": 5,
-  "spawn_range": 25,
-  "rewards": [
-    "cobblemon:rare_candy",
-    "cobblemon:rare_candy"
-  ],
+  "algorithms": {
+    "spawn_range": 25.0
+  },
   "biome": [
     "minecraft:forest",
     "minecraft:flower_forest",
@@ -22,5 +17,16 @@
     "minecraft:swamp",
     "minecraft:flower_forest",
     "#cobblemon:is_spooky"
-  ]
+  ],
+  "species_data": {
+    "spawns_per_wave": 5,
+    "species": "zubat",
+    "waves": 3
+  },
+  "rewards": {
+    "item_rewards": [
+      "cobblemon:rare_candy",
+      "cobblemon:rare_candy"
+    ]
+  }
 }

@@ -3,12 +3,13 @@
     "spawn_range": 20.0
   },
   "biome": [
-    "#cobblemon:is_tundra"
+    "minecraft:warm_ocean"
   ],
   "species_data": {
     "spawns_per_wave": 4,
-    "species": "swinub",
-    "waves": 3
+    "shiny_chance": 512.0,
+    "species": "luvdisc",
+    "waves": 4
   },
   "rewards": {}
 }
