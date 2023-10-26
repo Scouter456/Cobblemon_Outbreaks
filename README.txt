@@ -29,6 +29,8 @@ Thanks to Shadows of Fire for his GatewaysToEternity: https://github.com/Shadows
     "leash_range": 30.0
   },
   "gate_timer": 36000,
+  "outbreak_min_y": -63,
+  "outbreak_max_y": 255,
   "biome": ["biome_tag_1", "biome_tag_2"]
 }
 
