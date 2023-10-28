@@ -20,11 +20,15 @@ public enum PokemonRarity {
         this.probability = probability;
     }
 
-    public static PokemonRarity getRandomRarity(RandomSource randomSource) {
-        int totalProbability = 0;
+    private static int totalProbability;
+
+    static {
+        totalProbability = 0;
         for (PokemonRarity rarity : values()) {
             totalProbability += rarity.probability;
         }
+    }
+    public static PokemonRarity getRandomRarity(RandomSource randomSource) {
         int randomNumber = randomSource.nextInt(totalProbability);
         int cumulativeProbability = 0;
 

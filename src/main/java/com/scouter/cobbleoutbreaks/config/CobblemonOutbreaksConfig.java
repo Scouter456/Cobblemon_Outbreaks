@@ -8,7 +8,7 @@ public class CobblemonOutbreaksConfig {
     public static final ForgeConfigSpec CONFIG_BUILDER;
 
     static {
-        ForgeConfigSpec.Builder configBuilder = new ForgeConfigSpec.Builder();
+        ForgeConfigSpec.Builder configBuilder = new ForgeConfigSpec.Builder().worldRestart();
         setupConfig(configBuilder);
         CONFIG_BUILDER = configBuilder.build();
     }
@@ -25,7 +25,6 @@ public class CobblemonOutbreaksConfig {
     public static ForgeConfigSpec.ConfigValue<Boolean> SPAWN_PORTAL_PARTICLES;
     public static ForgeConfigSpec.ConfigValue<Boolean> BIOME_SPECIFIC_SPAWNS;
     public static ForgeConfigSpec.ConfigValue<Boolean> BIOME_SPECIFIC_SPAWNS_DEBUG;
-    public static ForgeConfigSpec.ConfigValue<Boolean> NOT_SPECIFIC_SPAWN_MESSAGE;
     public static ForgeConfigSpec.ConfigValue<Integer> MIN_SPAWN_RADIUS;
     public static ForgeConfigSpec.ConfigValue<Integer> MAX_SPAWN_RADIUS;
     public static ForgeConfigSpec.ConfigValue<Integer> COMMON_RARITY;
@@ -36,7 +35,7 @@ public class CobblemonOutbreaksConfig {
 
     private static void setupConfig(ForgeConfigSpec.Builder builder) {
         builder.comment(CobblemonOutbreaks.MODID + " Config");
-
+        builder.comment("The world needs to be restarted when changing a value for it to apply");
         OUTBREAK_PORTAL_SPAWN_SOUND = builder.comment("Turns the portal sound on or off when a pokemon is spawned in an outbreak").define("outbreak_portal_spawn_sound", true);
         OUTBREAK_SPAWN_TIMER = builder.comment("Time it takes for an outbreak to spawn around the player (in ticks 36000 being 30 minutes)").defineInRange("outbreak_spawn_timer", 36000,100,1728000);
         OUTBREAK_SPAWN_COUNT = builder.comment("Amount of outbreaks that spawn when the timer runs out, 0 spawns nothing").defineInRange("outbreak_spawn_count", 3, 1, 64);
@@ -44,9 +43,8 @@ public class CobblemonOutbreaksConfig {
 
         SEND_PORTAL_SPAWN_MESSAGE = builder.comment("Whether or not a message should be sent when an outbreak spawns, finishes and gets removed").define("send_outbreak_portal_spawn_message", true);
         SPAWN_PORTAL_PARTICLES = builder.comment("Turn particles on or off for the outbreak portal, this will make it easier to find them").define("spawn_portal_particles", false);
-        BIOME_SPECIFIC_SPAWNS = builder.comment("Whether or not the outbreaks should spawn in predetermined biomes").define("biome_specific_spawns", false);
+        BIOME_SPECIFIC_SPAWNS = builder.comment("Whether or not the outbreaks should spawn in predetermined biomes").define("biome_specific_spawns", true);
         BIOME_SPECIFIC_SPAWNS_DEBUG = builder.comment("A message that tells you what biome an outbreak is currently spawning in with their pokemon and if you expected this").define("biome_specific_spawns_debug", false);
-        NOT_SPECIFIC_SPAWN_MESSAGE = builder.comment("A message that tells you what blockposition the outbreak is spawning in with their pokemon").define("not_specific_spawn_message", false);
         OUTBREAK_PORTAL_SPAWN_VOLUME = builder.comment("Volume of the spawning sound of the outbreak portal").defineInRange("outbreak_portal_spawn_volume", 1D, 0D, 10D);
         OUTBREAK_PORTAL_POKEMON_SPAWN_VOLUME = builder.comment("Volume of the pokemon spawning sound of the outbreak portal").defineInRange("outbreak_portal_pokemon_spawn_volume", 0.2D, 0D, 10D);
         OUTBREAKS_MAP_FLUSH_TIMER = builder.comment("Time it takes for the map with outbreaks to flush through, every 6 hours").defineInRange("outbreaks_flush_timer", 432000, 100, 1728000);

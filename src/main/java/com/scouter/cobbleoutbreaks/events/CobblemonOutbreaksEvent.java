@@ -1,9 +1,11 @@
 package com.scouter.cobbleoutbreaks.events;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.scouter.cobbleoutbreaks.entity.OutbreakPortal;
 import com.scouter.cobbleoutbreaks.entity.OutbreakPortalEntity;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -227,5 +229,112 @@ public class CobblemonOutbreaksEvent extends Event
             return serverLevel;
         }
     }
+
+    /**
+     * Represents an event fired whenever an outbreak Pokémon is captured.
+     */
+    public static class OutbreakPokemonCapture extends CobblemonOutbreaksEvent {
+
+        private OutbreakPortalEntity portal;
+        private ServerLevel serverLevel;
+        private Pokemon pokemon;
+        private ServerPlayer player;
+
+        /**
+         * Constructs a new OutbreakPokemonCapture event.
+         *
+         * @param level The server level where the event occurred.
+         * @param entity The outbreak portal entity associated with the event.
+         * @param pokemon The captured Pokémon.
+         */
+        public OutbreakPokemonCapture(ServerLevel level, ServerPlayer player, OutbreakPortalEntity entity, Pokemon pokemon) {
+            this.portal = entity;
+            this.serverLevel = level;
+            this.pokemon = pokemon;
+            this.player = player;
+        }
+
+        /**
+         * Gets the outbreak portal entity associated with this event.
+         *
+         * @return The outbreak portal entity.
+         */
+        public OutbreakPortalEntity getPortal() {
+            return portal;
+        }
+
+        /**
+         * Gets the server level where this event occurred.
+         *
+         * @return The server level.
+         */
+        public ServerLevel getServerLevel() {
+            return serverLevel;
+        }
+
+        /**
+         * Gets the captured Pokémon.
+         *
+         * @return The captured Pokémon.
+         */
+        public Pokemon getPokemon() {
+            return pokemon;
+        }
+
+        public ServerPlayer getPlayer() {
+            return player;
+        }
+    }
+
+    /**
+     * Represents an event fired whenever an outbreak Pokémon is killed.
+     */
+    public static class OutbreakPokemonKilled extends CobblemonOutbreaksEvent {
+
+        private OutbreakPortalEntity portal;
+        private ServerLevel serverLevel;
+        private Pokemon pokemon;
+
+        /**
+         * Constructs a new OutbreakPokemonKilled event.
+         *
+         * @param level The server level where the event occurred.
+         * @param entity The outbreak portal entity associated with the event.
+         * @param pokemon The killed Pokémon.
+         */
+        public OutbreakPokemonKilled(ServerLevel level, OutbreakPortalEntity entity, Pokemon pokemon) {
+            this.portal = entity;
+            this.serverLevel = level;
+            this.pokemon = pokemon;
+        }
+
+        /**
+         * Gets the outbreak portal entity associated with this event.
+         *
+         * @return The outbreak portal entity.
+         */
+        public OutbreakPortalEntity getPortal() {
+            return portal;
+        }
+
+        /**
+         * Gets the server level where this event occurred.
+         *
+         * @return The server level.
+         */
+        public ServerLevel getServerLevel() {
+            return serverLevel;
+        }
+
+        /**
+         * Gets the killed Pokémon.
+         *
+         * @return The killed Pokémon.
+         */
+        public Pokemon getPokemon() {
+            return pokemon;
+        }
+    }
+
 
 }

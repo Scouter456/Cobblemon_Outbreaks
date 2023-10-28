@@ -409,6 +409,7 @@ public class OutbreakPortalEntity {
     public void kill(Level level) {
         for (UUID e : currentOutbreakWaveEntities) {
             PokemonOutbreakManager.get(level).removePokemonUUID(e);
+            PokemonOutbreakManager.get(level).removePokemonUUIDTemp(e);
         }
     }
 
