@@ -1,10 +1,12 @@
 package com.scouter.cobblemonoutbreaks.event;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.scouter.cobblemonoutbreaks.entity.OutbreakPortalEntity;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
@@ -76,6 +78,18 @@ public class CobblemonOutbreaksEvent {
             }
             return true;
         });
+
+        Event<OutbreakPokemonCapture> OUTBREAK_POKEMON_CAPTURE = EventFactory.createArrayBacked(OutbreakPokemonCapture.class, callbacks -> (level, player,outbreakPortal, pokemon) -> {
+            for (OutbreakPokemonCapture callback : callbacks) {
+                callback.onOutbreakPokemonCapture(level, player,outbreakPortal, pokemon);
+            }
+        });
+
+        Event<OutbreakPokemonKilled> OUTBREAK_POKEMON_KILLED = EventFactory.createArrayBacked(OutbreakPokemonKilled.class, callbacks -> (level, outbreakPortal, pokemon) -> {
+            for (OutbreakPokemonKilled callback : callbacks) {
+                callback.onOutbreakPokemonKilled(level, outbreakPortal, pokemon);
+            }
+        });
     }
 
     /**
@@ -135,6 +149,37 @@ public class CobblemonOutbreaksEvent {
          * @param allowRewards A boolean allowing the rewards of not.
          */
         boolean onSpawnRewards(ServerLevel level, List<ItemStack> items, boolean allowRewards);
+    }
+
+    /**
+     * This interface defines a callback for handling the event of capturing an outbreak Pokémon.
+     */
+    public interface OutbreakPokemonCapture {
+
+        /**
+         * Called when an outbreak Pokémon is captured.
+         *
+         * @param level The server level where the event occurred.
+         * @param player The player that captured the pokemon.
+         * @param entity The outbreak portal entity associated with the event.
+         * @param pokemon The captured Pokémon.
+         */
+        void onOutbreakPokemonCapture(ServerLevel level, ServerPlayer player, OutbreakPortalEntity entity, Pokemon pokemon);
+    }
+
+    /**
+     * This interface defines a callback for handling the event of killing an outbreak Pokémon.
+     */
+    public interface OutbreakPokemonKilled {
+
+        /**
+         * Called when an outbreak Pokémon is killed.
+         *
+         * @param level The server level where the event occurred.
+         * @param entity The outbreak portal entity associated with the event.
+         * @param pokemon The killed Pokémon.
+         */
+        void onOutbreakPokemonKilled(ServerLevel level, OutbreakPortalEntity entity, Pokemon pokemon);
     }
 
 }

@@ -216,7 +216,6 @@ public class OutbreakPortal {
             PokemonEntity pokemonEntity = pokemonProp.createEntity(level);
 
             pokemonEntity.setDespawner(despawner);
-            pokemonEntity.setPersistenceRequired();
 
 
             // We log that spawning failed either due to the Pokémon being null (unlikely) or the spawn position being null.

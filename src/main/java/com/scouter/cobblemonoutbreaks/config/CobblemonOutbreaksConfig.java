@@ -71,7 +71,7 @@ public class CobblemonOutbreaksConfig {
 
         SEND_PORTAL_SPAWN_MESSAGE = CONFIG.getOrDefault("send_outbreak_portal_spawn_message", true);
         SPAWN_PORTAL_PARTICLES = CONFIG.getOrDefault("spawn_portal_particles", false);
-        BIOME_SPECIFIC_SPAWNS = CONFIG.getOrDefault("biome_specific_spawns", false);
+        BIOME_SPECIFIC_SPAWNS = CONFIG.getOrDefault("biome_specific_spawns", true);
         BIOME_SPECIFIC_SPAWNS_DEBUG = CONFIG.getOrDefault("biome_specific_spawns_debug", false);
         MIN_SPAWN_RADIUS = CONFIG.getOrDefault("min_spawn_radius", 32);
         MAX_SPAWN_RADIUS = CONFIG.getOrDefault("max_spawn_radius", 64);

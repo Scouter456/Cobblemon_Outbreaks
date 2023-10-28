@@ -3,6 +3,7 @@ package com.scouter.cobblemonoutbreaks;
 import com.cobblemon.mod.common.api.Priority;
 import com.cobblemon.mod.common.api.events.CobblemonEvents;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.scouter.cobblemonoutbreaks.command.OutbreakPortalCommand;
 import com.scouter.cobblemonoutbreaks.config.CobblemonOutbreaksConfig;
 import com.scouter.cobblemonoutbreaks.data.OutbreakManager;
@@ -25,10 +26,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,11 +91,15 @@ public class CobblemonOutbreaks implements ModInitializer {
         CobblemonEvents.POKEMON_CAPTURED.subscribe(Priority.HIGH, event -> {
             if (!(event.getPlayer().level() instanceof ServerLevel serverLevel)) return Unit.INSTANCE;
             PokemonOutbreakManager outbreakManager = PokemonOutbreakManager.get(serverLevel);
+            Pokemon pokemon = event.getPokemon();
+            ServerPlayer player = event.getPlayer();
             UUID pokemonUUID = event.getPokemon().getUuid();
             if (!outbreakManager.containsUUID(pokemonUUID)) return Unit.INSTANCE;
             UUID ownerUUID = outbreakManager.getOwnerUUID(pokemonUUID);
             OutbreakManager outbreakManager1 = OutbreakManager.get(serverLevel);
             OutbreakPortalEntity outbreakPortal = outbreakManager1.getOutbreakEntity(ownerUUID);
+            CobblemonOutbreaksEvent.Events.OUTBREAK_POKEMON_CAPTURE.invoker().onOutbreakPokemonCapture(serverLevel, player, outbreakPortal, pokemon);
+
             if (outbreakPortal != null) {
                 outbreakPortal.removeFromSet(pokemonUUID);
             }
@@ -128,13 +133,15 @@ public class CobblemonOutbreaks implements ModInitializer {
                 }
 
             }
-
+            Pokemon pokemon = event.getPokemon();
             PokemonOutbreakManager outbreakManager = PokemonOutbreakManager.get(serverLevel);
             UUID pokemonUUID = event.getPokemon().getUuid();
             if (!outbreakManager.containsUUID(pokemonUUID)) return null;
             UUID ownerUUID = outbreakManager.getOwnerUUID(pokemonUUID);
             OutbreakManager outbreakManager1 = OutbreakManager.get(serverLevel);
             OutbreakPortalEntity outbreakPortal = outbreakManager1.getOutbreakEntity(ownerUUID);
+            CobblemonOutbreaksEvent.Events.OUTBREAK_POKEMON_KILLED.invoker().onOutbreakPokemonKilled(serverLevel, outbreakPortal, pokemon);
+
             if (outbreakPortal != null) {
                 outbreakPortal.removeFromSet(pokemonUUID);
             }
@@ -160,6 +167,13 @@ public class CobblemonOutbreaks implements ModInitializer {
     }
 
     public static void entityLoad() {
+        CobblemonOutbreaksEvent.Events.OUTBREAK_POKEMON_CAPTURE.register((level, player ,entity, pokemon) -> {
+            LOGGER.info("Pokemon Captured " + pokemon.getSpecies());
+        });
+
+        CobblemonOutbreaksEvent.Events.OUTBREAK_POKEMON_KILLED.register((level, entity, pokemon) -> {
+            LOGGER.info("Pokemon Killed " + pokemon.getSpecies());
+        });
         ServerEntityEvents.ENTITY_LOAD.register((entity, server) -> {
             if (server.getLevel().isClientSide || !(entity instanceof PokemonEntity pokemonEntity)) return;
             ServerLevel serverLevel = (ServerLevel) server.getLevel();
