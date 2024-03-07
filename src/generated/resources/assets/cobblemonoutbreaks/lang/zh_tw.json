@@ -1,0 +1,15 @@
+{
+  "cobblemonoutbreaks.clearing_outbreaks_map": "目前已平息大規模爆發。",
+  "cobblemonoutbreaks.clear_player_timers": "將所有計時器設為零！",
+  "cobblemonoutbreaks.set_to_config_value": "將所有設定恢復原值！",
+  "cobblemonoutbreaks.clearing_pokemon_outbreaks_map": "正在平息爆發中的寶可夢。任何爆發都會產生新的寶可夢或自行結束！",
+  "cobblemonoutbreaks.gate_failed_spawning": "因為找不到出生點，%s 爆發已被移除。",
+  "cobblemonoutbreaks.gate_finished": "%s 的爆發已結束",
+  "cobblemonoutbreaks.gate_not_able_to_load": "無法加載 %s，正在關閉大門！",
+  "cobblemonoutbreaks.gate_time_finished": "沒能及時結束 %s 的爆發！",
+  "cobblemonoutbreaks.portal_biome_specific_spawn_debug": "你附近的 %s 產生 %s 的爆發，並有 %s。",
+  "cobblemonoutbreaks.portal_spawn_near": "爆發正在附近蔓延。",
+  "cobblemonoutbreaks.portal_spawn_near_blockpos": "一場爆發發生在 %s ，時間為 %s。",
+  "cobblemonoutbreaks.unlucky_spawn": "一場爆發可能在你附近產生，但你不夠幸運。",
+  "cobblemonoutbreaks.unlucky_spawn_debug": "由於位置在 y: %s 產生因此未能發生。"
+}
