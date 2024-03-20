@@ -1,0 +1,15 @@
+{
+  "cobblemonoutbreaks.clearing_outbreaks_map": "Ahora eliminando todas las apariciones masivas.",
+  "cobblemonoutbreaks.clear_player_timers": "¡Ahora poniendo todos los temporizadores a cero!",
+  "cobblemonoutbreaks.set_to_config_value": "¡Ahora configurando todos los temporizadores mayores que el valor de configuración al valor de configuración!",
+  "cobblemonoutbreaks.clearing_pokemon_outbreaks_map": "¡Ahora limpiando los Pokémon guardados en las apariciones masivas. Cualquier aparición masiva en el mundo generará nuevos Pokémon o terminará!",
+  "cobblemonoutbreaks.gate_failed_spawning": "Se eliminó una aparición masiva de %s ya que no se pudieron encontrar puntos de spawn adecuados.",
+  "cobblemonoutbreaks.gate_finished": "¡La aparición masiva de %s ha terminado!",
+  "cobblemonoutbreaks.gate_not_able_to_load": "No se pudo cargar la aparición masiva con la siguiente ubicación de recursos %s, ¡cerrando la puerta!",
+  "cobblemonoutbreaks.gate_time_finished": "¡No has podido terminar la aparición masiva de %s a tiempo!",
+  "cobblemonoutbreaks.portal_biome_specific_spawn_debug": "Se ha generado una aparición masiva cerca de tí en %s en la posición %s de %s",
+  "cobblemonoutbreaks.portal_spawn_near": "Ha surgido una aparición masiva cerca de tí",
+  "cobblemonoutbreaks.portal_spawn_near_blockpos": "Se ha generado una aparición masiva en %s de %s",
+  "cobblemonoutbreaks.unlucky_spawn": "Una aparición masiva intentó generarse cerca de ti, sin embargo, no tuviste suerte...",
+  "cobblemonoutbreaks.unlucky_spawn_debug": "Una aparición masiva no pudo generarse debido a que tu posición estaba en y: %s"
+}
